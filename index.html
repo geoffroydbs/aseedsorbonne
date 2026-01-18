@@ -359,5 +359,17 @@
                 document.getElementById('events-container').innerHTML = '<div class="p-4 col-span-3 text-center text-sm text-gray-400">Connectez le CMS pour voir les événements.</div>';
             });
     </script>
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <script>
+      if (window.netlifyIdentity) {
+        window.netlifyIdentity.on("init", user => {
+          if (!user) {
+            window.netlifyIdentity.on("login", () => {
+              document.location.href = "/admin/";
+            });
+          }
+        });
+      }
+    </script>
 </body>
 </html>
