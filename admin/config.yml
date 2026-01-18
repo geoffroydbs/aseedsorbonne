@@ -5,47 +5,56 @@ backend:
 media_folder: "images/uploads"
 public_folder: "images/uploads"
 
-# Configuration de l'interface (Slug = URL propre)
 slug:
   encoding: "ascii"
   clean_accents: true
 
 collections:
   # ---------------------------------------------------------
-  # 1. CONFIGURATION GÉNÉRALE DU SITE
+  # 1. CONFIGURATION GÉNÉRALE & ALERTE
   # ---------------------------------------------------------
   - name: "settings"
     label: "⚙️ Configuration & Alerte"
     files:
       - name: "general"
-        label: "Textes & Liens"
+        label: "Textes & Liens Principaux"
         file: "content/settings.json"
         fields:
           - {label: "Titre Principal", name: "headline", widget: "string"}
           - {label: "Message d'accueil", name: "subtext", widget: "text"}
-          - {label: "Lien Annales", name: "annales_url", widget: "string"}
-          - {label: "Lien Instagram", name: "insta_url", widget: "string"}
+          - {label: "Lien Annales (Bouton Noir)", name: "annales_url", widget: "string"}
+          - {label: "Lien Instagram (Bouton Blanc)", name: "insta_url", widget: "string"}
       
       - name: "alert"
-        label: "🚨 Bandeau d'Urgence"
+        label: "🚨 Badge de Statut (Pilule)"
         file: "content/alert.json"
         fields:
-          - {label: "Activer le bandeau ?", name: "show_alert", widget: "boolean", default: false}
-          - {label: "Message d'alerte", name: "message", widget: "string", required: false}
-          - {label: "Type d'alerte", name: "type", widget: "select", options: ["Info (Bleu)", "Danger (Rouge)", "Succès (Vert)"], default: "Info (Bleu)"}
-          - {label: "Lien sur le bandeau (Optionnel)", name: "link", widget: "string", required: false}
+          - {label: "Afficher le badge ?", name: "show_alert", widget: "boolean", default: false}
+          - {label: "Message court", name: "message", widget: "string", required: false, hint: "Ex: Inscriptions Ouvertes"}
+          - label: "Couleur du point"
+            name: "type"
+            widget: "select"
+            # VOICI TOUTES LES COULEURS DISPONIBLES :
+            options: 
+              - "Important (Orange)"
+              - "Succès (Vert)"
+              - "Danger (Rouge)"
+              - "Info (Bleu)"
+              - "Neutre (Gris)"
+            default: "Important (Orange)"
+          - {label: "Lien au clic (Optionnel)", name: "link", widget: "string", required: false}
 
   # ---------------------------------------------------------
-  # 2. CONTENU DYNAMIQUE
+  # 2. CONTENU (ÉVÈNEMENTS)
   # ---------------------------------------------------------
   - name: "content"
     label: "📅 Évènements & Actus"
     files:
       - name: "events"
-        label: "Liste des Évènements"
+        label: "Agenda (Page Maintenance)"
         file: "content/data.json"
         fields:
-          - label: "Agenda"
+          - label: "Liste des Évènements"
             name: "events"
             widget: "list"
             fields:
@@ -54,51 +63,11 @@ collections:
               - {label: "Catégorie", name: "category", widget: "select", options: ["Vie Étudiante", "Culture", "Orientation", "Pédagogie", "Partenariat"]}
               - {label: "Titre", name: "title", widget: "string"}
               - {label: "Lieu", name: "location", widget: "string"}
-              - {label: "Lien (Optionnel)", name: "url", widget: "string", required: false}
-
-  # ---------------------------------------------------------
-  # 3. PARTENAIRES & ÉQUIPE
-  # ---------------------------------------------------------
-  - name: "relations"
-    label: "🤝 Partenaires & Équipe"
-    files:
-      - name: "partners"
-        label: "Logos Partenaires"
-        file: "content/partners.json"
-        fields:
-          - label: "Nos Partenaires"
-            name: "list"
+              - {label: "Lien vers l'évènement (Optionnel)", name: "url", widget: "string", required: false}
+          
+          - label: "Actualités (Pour plus tard)"
+            name: "news"
             widget: "list"
             fields:
-              - {label: "Nom", name: "name", widget: "string"}
-              - {label: "Logo", name: "logo", widget: "image"}
-              - {label: "Site Web", name: "url", widget: "string", required: false}
-
-      - name: "team"
-        label: "Membres du Bureau"
-        file: "content/team.json"
-        fields:
-          - label: "L'Équipe"
-            name: "members"
-            widget: "list"
-            fields:
-              - {label: "Nom", name: "name", widget: "string"}
-              - {label: "Rôle", name: "role", widget: "string"}
-              - {label: "Photo", name: "image", widget: "image"}
-
-  # ---------------------------------------------------------
-  # 4. DOCUMENTS LÉGAUX
-  # ---------------------------------------------------------
-  - name: "docs"
-    label: "📂 Documents Asso"
-    files:
-      - name: "legal"
-        label: "Fichiers à télécharger"
-        file: "content/docs.json"
-        fields:
-          - label: "Documents Publics"
-            name: "files"
-            widget: "list"
-            fields:
-              - {label: "Nom du fichier", name: "name", widget: "string"}
-              - {label: "Fichier PDF", name: "file", widget: "file"}
+              - {label: "Titre", name: "title", widget: "string"}
+              - {label: "Date", name: "date", widget: "date"}
