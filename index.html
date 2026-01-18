@@ -46,7 +46,7 @@
 
     <div class="relative z-10 max-w-3xl w-full px-6 text-center">
         
-        <div class="mx-auto mb-10">
+        <div class="mx-auto mb-8">
             <img src="logo.png" 
                  alt="Logo AsEED Sorbonne" 
                  class="h-40 md:h-56 w-auto mx-auto object-contain drop-shadow-2xl transition-transform duration-500 hover:scale-105"
@@ -54,41 +54,32 @@
             
             <div id="logo-fallback" class="hidden w-40 h-40 bg-brand text-white rounded-3xl items-center justify-center text-6xl font-bold font-head shadow-xl mx-auto">A</div>
         </div>
-<div class="mx-auto mb-8">
-            <img src="logo.png" ... > </div>
 
         <div id="status-pill" class="hidden mb-8 fade-in-up visible">
             <a id="status-link" href="#" class="inline-flex items-center gap-3 px-5 py-2.5 bg-white/90 backdrop-blur border border-gray-200 rounded-full shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300 group">
-                
                 <span class="relative flex h-3 w-3">
                   <span id="status-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></span>
                   <span id="status-dot" class="relative inline-flex rounded-full h-3 w-3 bg-brand"></span>
                 </span>
-                
-                <span id="status-message" class="text-sm font-bold text-gray-700 font-head group-hover:text-dark transition">
-                    Chargement...
-                </span>
-
+                <span id="status-message" class="text-sm font-bold text-gray-700 font-head group-hover:text-dark transition">Chargement...</span>
                 <i id="status-arrow" class="ph-bold ph-arrow-right text-gray-400 text-xs hidden group-hover:text-brand"></i>
             </a>
         </div>
 
-        <h1 id="hero-title" ...>
-        <h1 class="text-4xl md:text-6xl font-extrabold font-head text-gray-900 mb-4 tracking-tight">
+        <h1 id="hero-title" class="text-4xl md:text-6xl font-extrabold font-head text-gray-900 mb-4 tracking-tight">
             Site en travaux <span class="text-brand">🚧</span>
         </h1>
         
-        <p class="text-lg text-gray-500 font-medium mb-12 leading-relaxed max-w-xl mx-auto">
-            L'AsEED Sorbonne prépare une nouvelle plateforme.<br>
-            En attendant, retrouvez l'essentiel ici :
+        <p id="hero-subtext" class="text-lg text-gray-500 font-medium mb-12 leading-relaxed max-w-xl mx-auto whitespace-pre-line">
+            L'AsEED Sorbonne prépare une nouvelle plateforme.<br>En attendant, retrouvez l'essentiel ici :
         </p>
 
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 w-full mb-12">
-            <a href="https://drive.google.com/drive/folders/1mszCLfTjXTi6R34q0foX3ZuTHoio9AvR" target="_blank" class="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 bg-dark text-white rounded-xl font-bold hover:bg-gray-800 transition shadow-lg hover:-translate-y-1 transform duration-200 group text-lg">
+            <a id="btn-annales" href="#" target="_blank" class="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 bg-dark text-white rounded-xl font-bold hover:bg-gray-800 transition shadow-lg hover:-translate-y-1 transform duration-200 group text-lg">
                 <i class="ph-bold ph-files text-2xl group-hover:text-brand transition"></i>
                 <span>Accéder aux Annales</span>
             </a>
-            <a href="https://www.instagram.com/aseedsorbonne" target="_blank" class="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 bg-white border border-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-50 transition hover:border-brand/30 hover:text-brand shadow-sm hover:-translate-y-1 transform duration-200 text-lg">
+            <a id="btn-insta" href="#" target="_blank" class="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 bg-white border border-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-50 transition hover:border-brand/30 hover:text-brand shadow-sm hover:-translate-y-1 transform duration-200 text-lg">
                 <i class="ph-bold ph-instagram-logo text-2xl"></i>
                 <span>Suivre @aseedsorbonne</span>
             </a>
@@ -102,25 +93,67 @@
         </div>
 
         <div class="mt-16 pt-8 border-t border-gray-200/60 w-full max-w-xl mx-auto">
-            <p class="text-sm text-gray-400 font-medium">
-                Contact : <a href="mailto:contact@aseedsorbonne.com" class="text-brand hover:underline">contact@aseedsorbonne.com</a>
-            </p>
+            <p class="text-sm text-gray-400 font-medium">Contact : <a href="mailto:contact@aseedsorbonne.com" class="text-brand hover:underline">contact@aseedsorbonne.com</a></p>
         </div>
-
     </div>
 
     <script>
-        const dataUrl = 'content/data.json';
-        const categoryIcons = {
-            "Vie Étudiante": "ph-confetti",
-            "Culture": "ph-masks-theater",
-            "Orientation": "ph-compass",
-            "Pédagogie": "ph-student",
-            "Partenariat": "ph-handshake"
-        };
+        // -- 1. LOGIQUE DU BADGE (COULEURS) --
+        fetch('content/alert.json')
+            .then(r => r.json())
+            .then(alert => {
+                if(alert.show_alert) {
+                    const pill = document.getElementById('status-pill');
+                    const link = document.getElementById('status-link');
+                    const msg = document.getElementById('status-message');
+                    const dot = document.getElementById('status-dot');
+                    const ping = document.getElementById('status-ping');
+                    const arrow = document.getElementById('status-arrow');
+                    
+                    // COULEURS DU POINT
+                    let colorClass = 'bg-brand'; // Orange par défaut
+                    if(alert.type) {
+                        if(alert.type.includes("Vert")) colorClass = 'bg-emerald-500';
+                        if(alert.type.includes("Rouge")) colorClass = 'bg-red-500';
+                        if(alert.type.includes("Bleu")) colorClass = 'bg-blue-500';
+                        if(alert.type.includes("Gris")) colorClass = 'bg-gray-400';
+                    }
 
-        fetch(dataUrl)
-            .then(response => response.json())
+                    dot.className = `relative inline-flex rounded-full h-3 w-3 ${colorClass}`;
+                    ping.className = `animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${colorClass}`;
+
+                    msg.innerText = alert.message;
+                    
+                    if(alert.link) {
+                        link.href = alert.link;
+                        link.target = "_blank";
+                        arrow.classList.remove('hidden');
+                        link.classList.add('cursor-pointer', 'hover:border-brand/50');
+                    } else {
+                        link.removeAttribute('href');
+                        link.classList.add('cursor-default');
+                    }
+                    pill.classList.remove('hidden');
+                }
+            })
+            .catch(() => console.log("Pas de badge actif."));
+
+        // -- 2. LOGIQUE TEXTES ET BOUTONS --
+        fetch('content/settings.json')
+            .then(r => r.json())
+            .then(settings => {
+                if(settings.headline) document.getElementById('hero-title').innerHTML = settings.headline;
+                if(settings.subtext) document.getElementById('hero-subtext').innerText = settings.subtext;
+                if(settings.annales_url) document.getElementById('btn-annales').href = settings.annales_url;
+                if(settings.insta_url) document.getElementById('btn-insta').href = settings.insta_url;
+            })
+            .catch(() => console.log("Textes par défaut utilisés."));
+
+        // -- 3. LOGIQUE AGENDA --
+        const categoryIcons = { "Vie Étudiante": "ph-confetti", "Culture": "ph-masks-theater", "Orientation": "ph-compass", "Pédagogie": "ph-student", "Partenariat": "ph-handshake" };
+        
+        fetch('content/data.json')
+            .then(r => r.json())
             .then(data => {
                 const container = document.getElementById('events-container');
                 const wrapper = document.getElementById('events-wrapper');
@@ -129,8 +162,6 @@
                     wrapper.classList.remove('hidden');
                     container.innerHTML = data.events.map(event => {
                         const iconClass = categoryIcons[event.category] || "ph-calendar-blank";
-                        
-                        // LOGIQUE LIEN : Si une URL est présente, on crée un lien <a>, sinon une <div>
                         const tag = event.url ? 'a' : 'div';
                         const href = event.url ? `href="${event.url}" target="_blank"` : '';
                         const hoverClass = event.url ? 'hover:border-brand cursor-pointer hover:shadow-md' : 'cursor-default border-gray-100';
@@ -139,30 +170,22 @@
                         return `
                         <${tag} ${href} class="block bg-white p-5 rounded-2xl border ${hoverClass} flex items-center gap-5 transition shadow-sm group relative">
                             <div class="flex-shrink-0 w-16 h-16 bg-brand-50 rounded-2xl flex flex-col items-center justify-center text-brand border border-brand/10">
-                                <span class="text-xs font-bold uppercase leading-none">${event.month}</span>
-                                <span class="text-xl font-extrabold leading-none mt-1">${event.day}</span>
+                                <span class="text-xs font-bold uppercase leading-none">${event.month}</span><span class="text-xl font-extrabold leading-none mt-1">${event.day}</span>
                             </div>
                             <div class="flex-grow text-left">
                                 <span class="inline-flex items-center gap-1.5 text-[10px] font-bold text-gray-500 uppercase tracking-wide bg-gray-50 px-2.5 py-1 rounded-full border border-gray-100 mb-1">
-                                    <i class="ph-fill ${iconClass} text-brand text-xs"></i> 
-                                    ${event.category}
+                                    <i class="ph-fill ${iconClass} text-brand text-xs"></i> ${event.category}
                                 </span>
                                 <div class="flex justify-between items-start gap-2">
-                                    <div>
-                                        <h4 class="font-bold text-gray-900 text-base mt-1 group-hover:text-brand transition">${event.title}</h4>
-                                        <p class="text-sm text-gray-500 mt-0.5 flex items-center gap-1"><i class="ph-fill ph-map-pin"></i> ${event.location}</p>
-                                    </div>
+                                    <div><h4 class="font-bold text-gray-900 text-base mt-1 group-hover:text-brand transition">${event.title}</h4><p class="text-sm text-gray-500 mt-0.5 flex items-center gap-1"><i class="ph-fill ph-map-pin"></i> ${event.location}</p></div>
                                     ${linkIcon}
                                 </div>
                             </div>
-                        </${tag}>
-                        `;
+                        </${tag}>`;
                     }).join('');
                 }
             })
-            .catch(e => console.log("Pas d'évènements."));
+            .catch(() => console.log("Pas d'évènements."));
     </script>
-
 </body>
 </html>
-
