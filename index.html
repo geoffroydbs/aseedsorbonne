@@ -41,9 +41,6 @@
         .overlay {
             background: linear-gradient(to bottom, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.98) 100%);
         }
-        /* Scrollbar masquée pour le design */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="min-h-screen w-full flex flex-col items-center justify-center text-dark antialiased py-10">
@@ -52,8 +49,15 @@
 
     <div class="relative z-10 max-w-3xl w-full px-6 text-center">
         
-        <div class="w-20 h-20 bg-brand text-white rounded-2xl flex items-center justify-center text-3xl font-bold font-head shadow-xl mx-auto mb-6 animate-bounce-slow">
-            A
+        <div class="mx-auto mb-8 animate-bounce-slow">
+            <img src="logo.png" 
+                 alt="Logo AsEED Sorbonne" 
+                 class="h-24 w-auto mx-auto object-contain drop-shadow-xl"
+                 onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex'">
+            
+            <div id="logo-fallback" class="hidden w-20 h-20 bg-brand text-white rounded-2xl items-center justify-center text-3xl font-bold font-head shadow-xl mx-auto">
+                A
+            </div>
         </div>
 
         <h1 class="text-4xl md:text-6xl font-extrabold font-head text-gray-900 mb-4 tracking-tight">
@@ -66,17 +70,14 @@
         </p>
 
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 w-full mb-12">
-            
             <a href="https://drive.google.com/drive/folders/1mszCLfTjXTi6R34q0foX3ZuTHoio9AvR" target="_blank" class="w-full sm:w-auto flex items-center justify-center gap-3 px-6 py-3 bg-dark text-white rounded-xl font-bold hover:bg-gray-800 transition shadow-lg hover:-translate-y-1 transform duration-200 group">
                 <i class="ph-bold ph-files text-xl group-hover:text-brand transition"></i>
                 <span>Accéder aux Annales</span>
             </a>
-
             <a href="https://www.instagram.com/aseedsorbonne" target="_blank" class="w-full sm:w-auto flex items-center justify-center gap-3 px-6 py-3 bg-white border border-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-50 transition hover:border-brand/30 hover:text-brand shadow-sm hover:-translate-y-1 transform duration-200">
                 <i class="ph-bold ph-instagram-logo text-xl"></i>
                 <span>Suivre @aseedsorbonne</span>
             </a>
-
         </div>
 
         <div id="events-wrapper" class="hidden text-left bg-white/60 backdrop-blur-sm rounded-3xl border border-gray-200 p-6 shadow-sm">
@@ -97,41 +98,44 @@
     </div>
 
     <script>
-        // URL de votre fichier de données (généré par l'admin)
         const dataUrl = 'content/data.json';
+        const categoryIcons = {
+            "Vie Étudiante": "ph-confetti",
+            "Culture": "ph-masks-theater",
+            "Orientation": "ph-compass",
+            "Pédagogie": "ph-student",
+            "Partenariat": "ph-handshake"
+        };
 
         fetch(dataUrl)
             .then(response => response.json())
             .then(data => {
                 const container = document.getElementById('events-container');
                 const wrapper = document.getElementById('events-wrapper');
-
-                // Si on a des événements, on les affiche
                 if(data.events && data.events.length > 0) {
-                    
-                    // On retire la classe "hidden" pour afficher le bloc
                     wrapper.classList.remove('hidden');
-
-                    // On génère le HTML pour chaque event
-                    container.innerHTML = data.events.map(event => `
-                        <div class="bg-white p-4 rounded-xl border border-gray-100 flex items-center gap-4 hover:border-brand/40 transition shadow-sm">
+                    container.innerHTML = data.events.map(event => {
+                        const iconClass = categoryIcons[event.category] || "ph-calendar-blank";
+                        return `
+                        <div class="bg-white p-4 rounded-xl border border-gray-100 flex items-center gap-4 hover:border-brand/40 transition shadow-sm group">
                             <div class="flex-shrink-0 w-14 h-14 bg-brand-50 rounded-xl flex flex-col items-center justify-center text-brand border border-brand/10">
                                 <span class="text-[10px] font-bold uppercase leading-none">${event.month}</span>
                                 <span class="text-lg font-extrabold leading-none mt-0.5">${event.day}</span>
                             </div>
                             <div class="flex-grow">
-                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wide bg-gray-50 px-2 py-0.5 rounded-full">${event.category}</span>
-                                <h4 class="font-bold text-gray-900 text-sm mt-1">${event.title}</h4>
+                                <span class="inline-flex items-center gap-1.5 text-[10px] font-bold text-gray-500 uppercase tracking-wide bg-gray-50 px-2 py-0.5 rounded-full border border-gray-100">
+                                    <i class="ph-fill ${iconClass} text-brand text-xs"></i> 
+                                    ${event.category}
+                                </span>
+                                <h4 class="font-bold text-gray-900 text-sm mt-1 group-hover:text-brand transition">${event.title}</h4>
                                 <p class="text-xs text-gray-500 mt-0.5 flex items-center gap-1"><i class="ph-fill ph-map-pin"></i> ${event.location}</p>
                             </div>
                         </div>
-                    `).join('');
+                        `;
+                    }).join('');
                 }
             })
-            .catch(error => {
-                console.log("Pas d'évènements trouvés ou fichier data.json manquant.");
-                // Si erreur, on ne fait rien, la section reste cachée (hidden)
-            });
+            .catch(e => console.log("Pas d'évènements."));
     </script>
 
 </body>
