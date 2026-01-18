@@ -22,9 +22,6 @@
                     fontFamily: { 
                         sans: ['Inter', 'sans-serif'],
                         head: ['Outfit', 'sans-serif']
-                    },
-                    animation: {
-                        'bounce-slow': 'bounce 3s infinite',
                     }
                 }
             }
@@ -49,47 +46,43 @@
 
     <div class="relative z-10 max-w-3xl w-full px-6 text-center">
         
-        <div class="mx-auto mb-8 animate-bounce-slow">
+        <div class="mx-auto mb-10">
             <img src="logo.png" 
                  alt="Logo AsEED Sorbonne" 
-                 class="h-24 w-auto mx-auto object-contain drop-shadow-xl"
+                 class="h-40 md:h-56 w-auto mx-auto object-contain drop-shadow-2xl transition-transform duration-500 hover:scale-105"
                  onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex'">
             
-            <div id="logo-fallback" class="hidden w-20 h-20 bg-brand text-white rounded-2xl items-center justify-center text-3xl font-bold font-head shadow-xl mx-auto">
-                A
-            </div>
+            <div id="logo-fallback" class="hidden w-40 h-40 bg-brand text-white rounded-3xl items-center justify-center text-6xl font-bold font-head shadow-xl mx-auto">A</div>
         </div>
 
         <h1 class="text-4xl md:text-6xl font-extrabold font-head text-gray-900 mb-4 tracking-tight">
             Site en travaux <span class="text-brand">🚧</span>
         </h1>
         
-        <p class="text-lg text-gray-500 font-medium mb-10 leading-relaxed max-w-xl mx-auto">
+        <p class="text-lg text-gray-500 font-medium mb-12 leading-relaxed max-w-xl mx-auto">
             L'AsEED Sorbonne prépare une nouvelle plateforme.<br>
             En attendant, retrouvez l'essentiel ici :
         </p>
 
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 w-full mb-12">
-            <a href="https://drive.google.com/drive/folders/1mszCLfTjXTi6R34q0foX3ZuTHoio9AvR" target="_blank" class="w-full sm:w-auto flex items-center justify-center gap-3 px-6 py-3 bg-dark text-white rounded-xl font-bold hover:bg-gray-800 transition shadow-lg hover:-translate-y-1 transform duration-200 group">
-                <i class="ph-bold ph-files text-xl group-hover:text-brand transition"></i>
+            <a href="https://drive.google.com/drive/folders/1mszCLfTjXTi6R34q0foX3ZuTHoio9AvR" target="_blank" class="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 bg-dark text-white rounded-xl font-bold hover:bg-gray-800 transition shadow-lg hover:-translate-y-1 transform duration-200 group text-lg">
+                <i class="ph-bold ph-files text-2xl group-hover:text-brand transition"></i>
                 <span>Accéder aux Annales</span>
             </a>
-            <a href="https://www.instagram.com/aseedsorbonne" target="_blank" class="w-full sm:w-auto flex items-center justify-center gap-3 px-6 py-3 bg-white border border-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-50 transition hover:border-brand/30 hover:text-brand shadow-sm hover:-translate-y-1 transform duration-200">
-                <i class="ph-bold ph-instagram-logo text-xl"></i>
+            <a href="https://www.instagram.com/aseedsorbonne" target="_blank" class="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 bg-white border border-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-50 transition hover:border-brand/30 hover:text-brand shadow-sm hover:-translate-y-1 transform duration-200 text-lg">
+                <i class="ph-bold ph-instagram-logo text-2xl"></i>
                 <span>Suivre @aseedsorbonne</span>
             </a>
         </div>
 
-        <div id="events-wrapper" class="hidden text-left bg-white/60 backdrop-blur-sm rounded-3xl border border-gray-200 p-6 shadow-sm">
-            <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+        <div id="events-wrapper" class="hidden text-left bg-white/60 backdrop-blur-sm rounded-3xl border border-gray-200 p-8 shadow-sm max-w-2xl mx-auto w-full">
+            <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-6 flex items-center gap-2 border-b border-gray-200 pb-2">
                 <i class="ph-fill ph-calendar-check text-brand"></i> À venir prochainement
             </h3>
-            
-            <div id="events-container" class="space-y-3">
-                </div>
+            <div id="events-container" class="space-y-4"></div>
         </div>
 
-        <div class="mt-12 pt-8 border-t border-gray-200/60">
+        <div class="mt-16 pt-8 border-t border-gray-200/60 w-full max-w-xl mx-auto">
             <p class="text-sm text-gray-400 font-medium">
                 Contact : <a href="mailto:contact@aseedsorbonne.com" class="text-brand hover:underline">contact@aseedsorbonne.com</a>
             </p>
@@ -112,25 +105,38 @@
             .then(data => {
                 const container = document.getElementById('events-container');
                 const wrapper = document.getElementById('events-wrapper');
+
                 if(data.events && data.events.length > 0) {
                     wrapper.classList.remove('hidden');
                     container.innerHTML = data.events.map(event => {
                         const iconClass = categoryIcons[event.category] || "ph-calendar-blank";
+                        
+                        // LOGIQUE LIEN : Si une URL est présente, on crée un lien <a>, sinon une <div>
+                        const tag = event.url ? 'a' : 'div';
+                        const href = event.url ? `href="${event.url}" target="_blank"` : '';
+                        const hoverClass = event.url ? 'hover:border-brand cursor-pointer hover:shadow-md' : 'cursor-default border-gray-100';
+                        const linkIcon = event.url ? '<i class="ph-bold ph-arrow-up-right text-gray-400 group-hover:text-brand"></i>' : '';
+
                         return `
-                        <div class="bg-white p-4 rounded-xl border border-gray-100 flex items-center gap-4 hover:border-brand/40 transition shadow-sm group">
-                            <div class="flex-shrink-0 w-14 h-14 bg-brand-50 rounded-xl flex flex-col items-center justify-center text-brand border border-brand/10">
-                                <span class="text-[10px] font-bold uppercase leading-none">${event.month}</span>
-                                <span class="text-lg font-extrabold leading-none mt-0.5">${event.day}</span>
+                        <${tag} ${href} class="block bg-white p-5 rounded-2xl border ${hoverClass} flex items-center gap-5 transition shadow-sm group relative">
+                            <div class="flex-shrink-0 w-16 h-16 bg-brand-50 rounded-2xl flex flex-col items-center justify-center text-brand border border-brand/10">
+                                <span class="text-xs font-bold uppercase leading-none">${event.month}</span>
+                                <span class="text-xl font-extrabold leading-none mt-1">${event.day}</span>
                             </div>
-                            <div class="flex-grow">
-                                <span class="inline-flex items-center gap-1.5 text-[10px] font-bold text-gray-500 uppercase tracking-wide bg-gray-50 px-2 py-0.5 rounded-full border border-gray-100">
+                            <div class="flex-grow text-left">
+                                <span class="inline-flex items-center gap-1.5 text-[10px] font-bold text-gray-500 uppercase tracking-wide bg-gray-50 px-2.5 py-1 rounded-full border border-gray-100 mb-1">
                                     <i class="ph-fill ${iconClass} text-brand text-xs"></i> 
                                     ${event.category}
                                 </span>
-                                <h4 class="font-bold text-gray-900 text-sm mt-1 group-hover:text-brand transition">${event.title}</h4>
-                                <p class="text-xs text-gray-500 mt-0.5 flex items-center gap-1"><i class="ph-fill ph-map-pin"></i> ${event.location}</p>
+                                <div class="flex justify-between items-start gap-2">
+                                    <div>
+                                        <h4 class="font-bold text-gray-900 text-base mt-1 group-hover:text-brand transition">${event.title}</h4>
+                                        <p class="text-sm text-gray-500 mt-0.5 flex items-center gap-1"><i class="ph-fill ph-map-pin"></i> ${event.location}</p>
+                                    </div>
+                                    ${linkIcon}
+                                </div>
                             </div>
-                        </div>
+                        </${tag}>
                         `;
                     }).join('');
                 }
