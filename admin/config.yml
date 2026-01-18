@@ -18,11 +18,13 @@ collections:
             widget: "list"
             fields:
               - {label: "Mois (ex: JAN)", name: "month", widget: "string"}
-              - {label: "Jour (ex: 14)", name: "day", widget: "string"}
-              - {label: "Catégorie", name: "category", widget: "string"}
-              - {label: "Titre", name: "title", widget: "string"}
+              - {label: "Jour (ex: 25)", name: "day", widget: "string"}
+              - {label: "Catégorie", name: "category", widget: "select", options: ["Vie Étudiante", "Culture", "Orientation", "Pédagogie", "Partenariat"]}
+              - {label: "Titre de l'évènement", name: "title", widget: "string"}
               - {label: "Lieu & Heure", name: "location", widget: "string"}
-
+              # LE NOUVEAU CHAMP EST ICI :
+              - {label: "Lien (Optionnel)", name: "url", widget: "string", required: false, hint: "Mettez le lien complet (https://...) si vous voulez que la carte soit cliquable"}
+          
           - label: "📰 Actualités"
             name: "news"
             widget: "list"
