@@ -4,9 +4,74 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin AsEED</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  
+  <style>
+    /* Force la police moderne */
+    body, h1, h2, h3, div, span, button, input {
+        font-family: 'Inter', sans-serif !important;
+    }
+    
+    /* Couleurs de la Sidebar (Menu de gauche) */
+    [class*="SidebarContainer"] {
+        background-color: #0f172a !important; /* Bleu Nuit */
+        border-right: 1px solid #1e293b !important;
+    }
+    
+    /* Le logo ou nom en haut à gauche */
+    [class*="SidebarBrand"] {
+        color: #fff !important;
+        font-weight: 800 !important;
+        letter-spacing: 1px;
+    }
+
+    /* Liens du menu actifs */
+    [class*="SidebarNavLink"].header-active {
+        background-color: #FF8533 !important; /* Orange Asso */
+        color: white !important;
+        border-radius: 8px;
+    }
+
+    /* Boutons (Publier, Créer) */
+    button[class*="Button"] {
+        background-color: #FF8533 !important;
+        border: none !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        transition: all 0.2s;
+    }
+    button[class*="Button"]:hover {
+        background-color: #FF6B00 !important;
+        transform: translateY(-1px);
+    }
+
+    /* Champs de formulaire */
+    input, textarea {
+        border-radius: 8px !important;
+        border: 1px solid #e2e8f0 !important;
+        padding: 10px !important;
+    }
+    input:focus, textarea:focus {
+        border-color: #FF8533 !important;
+        box-shadow: 0 0 0 3px rgba(255, 133, 51, 0.2) !important;
+    }
+
+    /* En-tête gris clair */
+    [class*="AppHeader"] {
+        background-color: white !important;
+        border-bottom: 1px solid #f1f5f9 !important;
+    }
+  </style>
 </head>
 <body>
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  
+  <script>
+    // Ajoute les styles CSS du vrai site dans l'admin pour la prévisualisation à droite
+    CMS.registerPreviewStyle("https://cdn.tailwindcss.com");
+  </script>
 </body>
 </html>
