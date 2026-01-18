@@ -1,0 +1,30 @@
+# DIT À CLOUDCANNON OÙ SONT LES DONNÉES
+data_config:
+  events:
+    path: content/data.json
+    format: json
+  settings:
+    path: content/settings.json
+    format: json
+
+# DIT À CLOUDCANNON QUELS DOSSIERS AFFICHER
+collections_config:
+  data:
+    path: content
+    parser: json
+    output: false
+
+# CONFIGURATION DES CHAMPS (Pour que ce soit joli)
+inputs:
+  category:
+    type: select
+    options:
+      values:
+        - Vie Étudiante
+        - Culture
+        - Orientation
+        - Pédagogie
+        - Partenariat
+  image:
+    type: file
+    accept: .jpg, .png, .jpeg, .webp
