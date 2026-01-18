@@ -1,0 +1,34 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "images/uploads"
+public_folder: "images/uploads"
+
+collections:
+  - name: "data"
+    label: "Modifier le Site"
+    files:
+      - name: "content"
+        label: "Contenu (Events & Actus)"
+        file: "content/data.json"
+        fields:
+          - label: "📅 Évènements (Barre flottante)"
+            name: "events"
+            widget: "list"
+            fields:
+              - {label: "Mois (ex: JAN)", name: "month", widget: "string"}
+              - {label: "Jour (ex: 14)", name: "day", widget: "string"}
+              - {label: "Catégorie", name: "category", widget: "string"}
+              - {label: "Titre", name: "title", widget: "string"}
+              - {label: "Lieu & Heure", name: "location", widget: "string"}
+
+          - label: "📰 Actualités"
+            name: "news"
+            widget: "list"
+            fields:
+              - {label: "Titre", name: "title", widget: "string"}
+              - {label: "Image", name: "image", widget: "image"}
+              - {label: "Catégorie", name: "category", widget: "select", options: ["Vie Étudiante", "Pédagogie", "Partenariat"]}
+              - {label: "Date", name: "date", widget: "datetime", format: "DD MMMM YYYY", date_format: "DD MMMM YYYY", time_format: false}
+              - {label: "Extrait", name: "excerpt", widget: "text"}
