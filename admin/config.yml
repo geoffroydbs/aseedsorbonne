@@ -5,32 +5,100 @@ backend:
 media_folder: "images/uploads"
 public_folder: "images/uploads"
 
+# Configuration de l'interface (Slug = URL propre)
+slug:
+  encoding: "ascii"
+  clean_accents: true
+
 collections:
-  - name: "data"
-    label: "Modifier le Site"
+  # ---------------------------------------------------------
+  # 1. CONFIGURATION GÉNÉRALE DU SITE
+  # ---------------------------------------------------------
+  - name: "settings"
+    label: "⚙️ Configuration & Alerte"
     files:
-      - name: "content"
-        label: "Contenu (Events & Actus)"
+      - name: "general"
+        label: "Textes & Liens"
+        file: "content/settings.json"
+        fields:
+          - {label: "Titre Principal", name: "headline", widget: "string"}
+          - {label: "Message d'accueil", name: "subtext", widget: "text"}
+          - {label: "Lien Annales", name: "annales_url", widget: "string"}
+          - {label: "Lien Instagram", name: "insta_url", widget: "string"}
+      
+      - name: "alert"
+        label: "🚨 Bandeau d'Urgence"
+        file: "content/alert.json"
+        fields:
+          - {label: "Activer le bandeau ?", name: "show_alert", widget: "boolean", default: false}
+          - {label: "Message d'alerte", name: "message", widget: "string", required: false}
+          - {label: "Type d'alerte", name: "type", widget: "select", options: ["Info (Bleu)", "Danger (Rouge)", "Succès (Vert)"], default: "Info (Bleu)"}
+          - {label: "Lien sur le bandeau (Optionnel)", name: "link", widget: "string", required: false}
+
+  # ---------------------------------------------------------
+  # 2. CONTENU DYNAMIQUE
+  # ---------------------------------------------------------
+  - name: "content"
+    label: "📅 Évènements & Actus"
+    files:
+      - name: "events"
+        label: "Liste des Évènements"
         file: "content/data.json"
         fields:
-          - label: "📅 Évènements (Barre flottante)"
+          - label: "Agenda"
             name: "events"
             widget: "list"
             fields:
               - {label: "Mois (ex: JAN)", name: "month", widget: "string"}
               - {label: "Jour (ex: 25)", name: "day", widget: "string"}
               - {label: "Catégorie", name: "category", widget: "select", options: ["Vie Étudiante", "Culture", "Orientation", "Pédagogie", "Partenariat"]}
-              - {label: "Titre de l'évènement", name: "title", widget: "string"}
-              - {label: "Lieu & Heure", name: "location", widget: "string"}
-              # LE NOUVEAU CHAMP EST ICI :
-              - {label: "Lien (Optionnel)", name: "url", widget: "string", required: false, hint: "Mettez le lien complet (https://...) si vous voulez que la carte soit cliquable"}
-          
-          - label: "📰 Actualités"
-            name: "news"
+              - {label: "Titre", name: "title", widget: "string"}
+              - {label: "Lieu", name: "location", widget: "string"}
+              - {label: "Lien (Optionnel)", name: "url", widget: "string", required: false}
+
+  # ---------------------------------------------------------
+  # 3. PARTENAIRES & ÉQUIPE
+  # ---------------------------------------------------------
+  - name: "relations"
+    label: "🤝 Partenaires & Équipe"
+    files:
+      - name: "partners"
+        label: "Logos Partenaires"
+        file: "content/partners.json"
+        fields:
+          - label: "Nos Partenaires"
+            name: "list"
             widget: "list"
             fields:
-              - {label: "Titre", name: "title", widget: "string"}
-              - {label: "Image", name: "image", widget: "image"}
-              - {label: "Catégorie", name: "category", widget: "select", options: ["Vie Étudiante", "Pédagogie", "Partenariat"]}
-              - {label: "Date", name: "date", widget: "datetime", format: "DD MMMM YYYY", date_format: "DD MMMM YYYY", time_format: false}
-              - {label: "Extrait", name: "excerpt", widget: "text"}
+              - {label: "Nom", name: "name", widget: "string"}
+              - {label: "Logo", name: "logo", widget: "image"}
+              - {label: "Site Web", name: "url", widget: "string", required: false}
+
+      - name: "team"
+        label: "Membres du Bureau"
+        file: "content/team.json"
+        fields:
+          - label: "L'Équipe"
+            name: "members"
+            widget: "list"
+            fields:
+              - {label: "Nom", name: "name", widget: "string"}
+              - {label: "Rôle", name: "role", widget: "string"}
+              - {label: "Photo", name: "image", widget: "image"}
+
+  # ---------------------------------------------------------
+  # 4. DOCUMENTS LÉGAUX
+  # ---------------------------------------------------------
+  - name: "docs"
+    label: "📂 Documents Asso"
+    files:
+      - name: "legal"
+        label: "Fichiers à télécharger"
+        file: "content/docs.json"
+        fields:
+          - label: "Documents Publics"
+            name: "files"
+            widget: "list"
+            fields:
+              - {label: "Nom du fichier", name: "name", widget: "string"}
+              - {label: "Fichier PDF", name: "file", widget: "file"}
