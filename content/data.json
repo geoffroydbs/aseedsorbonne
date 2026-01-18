@@ -3,9 +3,10 @@
     {
       "month": "JAN",
       "day": "31",
-      "category": "Vie Étudiante",
+      "category": "Orientation",
       "title": "JPO Licence de Droit",
-      "location": "Centre Lourcine - 9h00"
+      "location": "Centre Lourcine - 9h00",
+      "url": "https://www.pantheonsorbonne.fr/evenements/journees-portes-ouvertes-2026"
     }
   ],
   "news": []
