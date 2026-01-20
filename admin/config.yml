@@ -1,27 +1,31 @@
-# Configuration du Backend avec DecapBridge
+# ---------------------------------------------------------
+# CONFIGURATION DU BACKEND (DECAPBRIDGE)
+# ---------------------------------------------------------
 backend:
   name: github
   repo: geoffroydbs/aseedsorbonne
   branch: main
+  auth_type: pkce
   base_url: https://auth.decapbridge.com
   auth_endpoint: /sites/2fc63fc3-ce15-4508-adc1-62384b4d7296/pkce
-  # Note : Pour DecapBridge, le nom du backend doit souvent rester 'github' 
-  # car il simule l'authentification GitHub via PKCE.
-  auth_type: pkce
+  # Note : L'endpoint de token est géré via la passerelle PKCE ci-dessus
+  gateway_url: https://gateway.decapbridge.com
 
-# Configuration de la passerelle de commits
-gateway_url: https://gateway.decapbridge.com
-
-# Configuration optionnelle de l'interface
-logo_url: https://decapbridge.com/decapcms-with-bridge.svg
-site_url: https://aseedsorbonne.com
-display_url: https://aseedsorbonne.com
-
-# Media folder (obligatoire pour Decap CMS)
+# ---------------------------------------------------------
+# PARAMÈTRES MÉDIAS (OBLIGATOIRES)
+# ---------------------------------------------------------
+# Ces lignes corrigent l'erreur "config must have required property 'media_folder'"
 media_folder: "public/images"
 public_folder: "/images"
 
-# Personnalisation des messages de commit (Optionnel)
+# ---------------------------------------------------------
+# CONFIGURATION DE L'INTERFACE
+# ---------------------------------------------------------
+site_url: https://aseedsorbonne.com
+display_url: https://aseedsorbonne.com
+logo_url: https://decapbridge.com/decapcms-with-bridge.svg
+
+# Personnalisation des messages de commit
 commit_messages:
   create: "Create {{collection}} “{{slug}}” - {{author-name}} via DecapBridge"
   update: "Update {{collection}} “{{slug}}” - {{author-name}} via DecapBridge"
@@ -29,11 +33,61 @@ commit_messages:
   uploadMedia: "Upload “{{path}}” - {{author-name}} via DecapBridge"
   deleteMedia: "Delete “{{path}}” - {{author-name}} via DecapBridge"
 
+# ---------------------------------------------------------
+# COLLECTIONS
+# ---------------------------------------------------------
 collections:
-  # ---------------------------------------------------------
-  # 1. CONFIGURATION GÉNÉRALE & ALERTE
-  # ---------------------------------------------------------
   - name: "settings"
     label: "⚙️ Configuration & Alerte"
-    delete: false # Empêche la suppression accidentelle du fichier de config
-    editor
+    files:
+      - name: "general"
+        label: "Textes & Liens Principaux"
+        file: "content/settings.json"
+        fields:
+          - {label: "Titre Principal", name: "headline", widget: "string"}
+          - {label: "Message d'accueil", name: "subtext", widget: "text"}
+          - {label: "Lien Annales (Bouton Noir)", name: "annales_url", widget: "string"}
+          - {label: "Lien Instagram (Bouton Blanc)", name: "insta_url", widget: "string"}
+      
+      - name: "alert"
+        label: "🚨 Badge de Statut (Pilule)"
+        file: "content/alert.json"
+        fields:
+          - {label: "Afficher le badge ?", name: "show_alert", widget: "boolean", default: false}
+          - {label: "Message court", name: "message", widget: "string", required: false, hint: "Ex: Inscriptions Ouvertes"}
+          - label: "Couleur du point"
+            name: "type"
+            widget: "select"
+            options: 
+              - {label: "Orange", value: "orange"}
+              - {label: "Vert", value: "green"}
+              - {label: "Rouge", value: "red"}
+              - {label: "Bleu", value: "blue"}
+              - {label: "Gris", value: "gray"}
+            default: "orange"
+          - {label: "Lien au clic (Optionnel)", name: "link", widget: "string", required: false}
+
+  - name: "content"
+    label: "📅 Évènements & Actus"
+    files:
+      - name: "events"
+        label: "Agenda (Page Maintenance)"
+        file: "content/data.json"
+        fields:
+          - label: "Liste des Évènements"
+            name: "events"
+            widget: "list"
+            fields:
+              - {label: "Mois (ex: JAN)", name: "month", widget: "string"}
+              - {label: "Jour (ex: 25)", name: "day", widget: "string"}
+              - {label: "Catégorie", name: "category", widget: "select", options: ["Vie Étudiante", "Culture", "Orientation", "Pédagogie", "Partenariat"]}
+              - {label: "Titre", name: "title", widget: "string"}
+              - {label: "Lieu", name: "location", widget: "string"}
+              - {label: "Lien vers l'évènement (Optionnel)", name: "url", widget: "string", required: false}
+          
+          - label: "Actualités (Pour plus tard)"
+            name: "news"
+            widget: "list"
+            fields:
+              - {label: "Titre", name: "title", widget: "string"}
+              - {label: "Date", name: "date", widget: "date"}
