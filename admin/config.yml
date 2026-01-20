@@ -1,5 +1,5 @@
 # ---------------------------------------------------------
-# CONFIGURATION DU BACKEND (DECAPBRIDGE)
+# BACKEND : AUTHENTIFICATION PKCE VIA DECAPBRIDGE
 # ---------------------------------------------------------
 backend:
   name: github
@@ -7,14 +7,13 @@ backend:
   branch: main
   auth_type: pkce
   base_url: https://auth.decapbridge.com
+  # ID vérifié selon vos précédentes captures
   auth_endpoint: /sites/2fc63fc3-ce15-4508-adc1-62384b4d7296/pkce
-  # Note : L'endpoint de token est géré via la passerelle PKCE ci-dessus
   gateway_url: https://gateway.decapbridge.com
 
 # ---------------------------------------------------------
-# PARAMÈTRES MÉDIAS (OBLIGATOIRES)
+# GESTION DES MÉDIAS (OBLIGATOIRE POUR ÉVITER LES ERREURS)
 # ---------------------------------------------------------
-# Ces lignes corrigent l'erreur "config must have required property 'media_folder'"
 media_folder: "public/images"
 public_folder: "/images"
 
@@ -25,7 +24,7 @@ site_url: https://aseedsorbonne.com
 display_url: https://aseedsorbonne.com
 logo_url: https://decapbridge.com/decapcms-with-bridge.svg
 
-# Personnalisation des messages de commit
+# Personnalisation des messages de commit pour la traçabilité
 commit_messages:
   create: "Create {{collection}} “{{slug}}” - {{author-name}} via DecapBridge"
   update: "Update {{collection}} “{{slug}}” - {{author-name}} via DecapBridge"
@@ -34,7 +33,7 @@ commit_messages:
   deleteMedia: "Delete “{{path}}” - {{author-name}} via DecapBridge"
 
 # ---------------------------------------------------------
-# COLLECTIONS
+# COLLECTIONS DE CONTENU
 # ---------------------------------------------------------
 collections:
   - name: "settings"
@@ -54,8 +53,8 @@ collections:
         file: "content/alert.json"
         fields:
           - {label: "Afficher le badge ?", name: "show_alert", widget: "boolean", default: false}
-          - {label: "Message court", name: "message", widget: "string", required: false, hint: "Ex: Inscriptions Ouvertes"}
-          - label: "Couleur du point"
+          - {label: "Message court", name: "message", widget: "string", required: false}
+          - label: "Couleur"
             name: "type"
             widget: "select"
             options: 
@@ -63,7 +62,6 @@ collections:
               - {label: "Vert", value: "green"}
               - {label: "Rouge", value: "red"}
               - {label: "Bleu", value: "blue"}
-              - {label: "Gris", value: "gray"}
             default: "orange"
           - {label: "Lien au clic (Optionnel)", name: "link", widget: "string", required: false}
 
@@ -71,7 +69,7 @@ collections:
     label: "📅 Évènements & Actus"
     files:
       - name: "events"
-        label: "Agenda (Page Maintenance)"
+        label: "Agenda"
         file: "content/data.json"
         fields:
           - label: "Liste des Évènements"
@@ -83,11 +81,4 @@ collections:
               - {label: "Catégorie", name: "category", widget: "select", options: ["Vie Étudiante", "Culture", "Orientation", "Pédagogie", "Partenariat"]}
               - {label: "Titre", name: "title", widget: "string"}
               - {label: "Lieu", name: "location", widget: "string"}
-              - {label: "Lien vers l'évènement (Optionnel)", name: "url", widget: "string", required: false}
-          
-          - label: "Actualités (Pour plus tard)"
-            name: "news"
-            widget: "list"
-            fields:
-              - {label: "Titre", name: "title", widget: "string"}
-              - {label: "Date", name: "date", widget: "date"}
+              - {label: "Lien (Optionnel)", name: "url", widget: "string", required: false}
