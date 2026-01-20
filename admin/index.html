@@ -1,4 +1,4 @@
-<!doctype html>
+<!doctype html><!doctype html>
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
@@ -8,45 +8,28 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  
   <style>
-    /* --- VOS STYLES PERSONNALISÉS (CONSERVÉS) --- */
-    :root {
-        --color-primary: #FF8533;
-        --color-primary-dark: #FF6B00;
-        --color-bg-dark: #0f172a;
-        --color-bg-light: #f1f5f9;
-        --color-text-main: #334155;
-        --radius: 12px;
-    }
-
-    body {
-        font-family: 'Inter', sans-serif !important;
-        -webkit-font-smoothing: antialiased;
-    }
-
-    /* Le reste de votre CSS reste identique... */
-    aside[class*="SidebarContainer"] { background-color: var(--color-bg-dark) !important; border-right: none !important; }
-    a[class*="SidebarBrand"] { color: white !important; font-family: 'Outfit', sans-serif !important; font-weight: 800 !important; font-size: 1.4rem !important; display: flex; align-items: center; justify-content: center; height: 70px !important; }
-    a[class*="SidebarNavLink"] { color: #94a3b8 !important; border-left: 4px solid transparent !important; padding: 12px 20px !important; transition: all 0.2s ease !important; font-weight: 500 !important; }
-    a[class*="SidebarNavLink"][class*="active"] { background-color: rgba(255, 255, 255, 0.05) !important; color: var(--color-primary) !important; border-left-color: var(--color-primary) !important; }
-    button[class*="Button"][class*="primary"] { background-color: var(--color-primary) !important; color: white !important; }
-    /* ... (Gardez tout votre CSS ici) ... */
+    /* Conservez ici tout votre CSS orange personnalisé */
+    :root { --color-primary: #FF8533; --color-bg-dark: #0f172a; }
+    /* ... (Votre CSS actuel) ... */
   </style>
 </head>
 <body>
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
-  
+
   <script>
-    // Configuration des styles de preview
-    CMS.registerPreviewStyle("https://cdn.tailwindcss.com");
-    CMS.registerPreviewStyle("https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&family=Inter:wght@400;500;600&display=swap");
-    
-    CMS.registerPreviewStyle(`
-      body { font-family: 'Inter', sans-serif; padding: 20px; }
-      h1, h2, h3, h4, h5 { font-family: 'Outfit', sans-serif; font-weight: 800; color: #0f172a; }
-      p { color: #4b5563; line-height: 1.6; }
-      a { color: #FF8533; text-decoration: underline; }
-    `);
+    // Script optionnel pour rediriger l'utilisateur vers l'admin après le login
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.on("init", user => {
+        if (!user) {
+          window.netlifyIdentity.on("login", () => {
+            document.location.href = "/admin/";
+          });
+        }
+      });
+    }
   </script>
 </body>
 </html>
