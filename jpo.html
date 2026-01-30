@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide JPO - AsEED Sorbonne</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { DEFAULT: '#FF8533', 50: '#FFF8F2', 100: '#FFEDD5', 600: '#EA580C' },
+                        dark: '#0f172a',
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], hand: ['Caveat', 'cursive'] },
+                    animation: { 
+                        'fade-in': 'fadeIn 0.8s ease-out forwards',
+                        'float': 'float 6s ease-in-out infinite' 
+                    },
+                    keyframes: { 
+                        fadeIn: { '0%': { opacity: '0', transform: 'translateY(10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        section { scroll-margin-top: 100px; }
+        .toc-link.active { color: #C2410C; border-left-color: #FF8533; background: linear-gradient(to right, #FFF7ED, transparent); font-weight: 700; }
+        .toc-link { border-left: 3px solid transparent; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Style des épingles de carte */
+        .custom-pin {
+            background-color: #FF8533;
+            border: 3px solid white;
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+        .custom-pin:hover { transform: scale(1.2); }
+    </style>
+</head>
+<div id="info-banner" class="fixed top-0 left-0 w-full z-[100] bg-dark text-white text-[10px] sm:text-xs font-medium py-2 pl-4 pr-2 flex justify-between items-center border-b border-gray-800 shadow-md print:hidden">
+        
+        <div class="flex-1 text-center">
+            📌 Ce guide est consultable sur : 
+            <a href="https://jpo.aseedsorbonne.com" class="text-brand font-bold hover:underline">jpo.aseedsorbonne.com</a>
+            <span class="hidden sm:inline">— Mettez-le en favori ! ⭐</span>
+        </div>
+
+        <button onclick="closeBanner()" class="ml-2 p-1 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition" aria-label="Fermer">
+            <i class="ph-bold ph-x text-base"></i>
+        </button>
+    </div>
+
+    <script>
+        // Fonction pour fermer le bandeau et remonter le menu
+        function closeBanner() {
+            const banner = document.getElementById('info-banner');
+            const nav = document.querySelector('nav');
+            
+            if(banner) {
+                banner.style.display = 'none'; // Cache le bandeau
+                if(nav) nav.style.transition = 'top 0.3s'; // Animation fluide
+                if(nav) nav.style.top = '0';   // Remonte le menu
+            }
+        }
+
+        // Ajustement automatique de la position du menu au chargement
+        document.addEventListener("DOMContentLoaded", () => {
+            const banner = document.getElementById('info-banner');
+            const nav = document.querySelector('nav');
+            if(banner && nav) {
+                nav.style.top = banner.offsetHeight + 'px';
+            }
+        });
+    </script>
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-brand-100 selection:text-brand-600 overflow-x-hidden">
+
+    <nav class="fixed w-full z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 h-16 lg:h-20 flex items-center shadow-sm">
+        <div class="max-w-7xl w-full mx-auto px-6 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-3 group z-50">
+                <img src="logo.png" class="h-8 lg:h-10 w-auto group-hover:scale-105 transition" alt="AsEED">
+                <div class="leading-tight">
+                    <span class="block font-extrabold text-base lg:text-lg text-dark">AsEED</span>
+                    <span class="block text-[8px] lg:text-[10px] font-bold text-brand uppercase tracking-widest">Sorbonne</span>
+                </div>
+            </a>
+            <div class="hidden lg:flex items-center gap-4">
+                <span class="text-xs font-bold uppercase text-gray-400 tracking-widest mr-2">Guide de l'étudiant</span>
+                <a href="index.html" class="text-sm font-bold text-gray-500 hover:text-brand transition flex items-center gap-2"><i class="ph-bold ph-arrow-left"></i> Retour au site</a>
+            </div>
+            <button id="menu-btn" class="lg:hidden z-50 p-2 text-dark hover:text-brand transition"><i class="ph-bold ph-list text-2xl"></i></button>
+        </div>
+    </nav>
+
+    <div id="mobile-menu" class="fixed inset-0 bg-white z-40 pt-24 px-6 translate-x-full transition-transform duration-300 lg:hidden flex flex-col h-screen overflow-y-auto">
+        <nav class="flex flex-col space-y-4 text-lg font-bold text-dark">
+            <a href="#bienvenue" class="mobile-link py-3 border-b border-gray-100">Bienvenue</a>
+            <a href="#universite" class="mobile-link py-3 border-b border-gray-100">L'Université Paris 1</a>
+            <a href="#chiffres" class="mobile-link py-3 border-b border-gray-100">Quelques Chiffres</a>
+            <a href="#programme" class="mobile-link py-3 border-b border-gray-100">Programme de la Licence</a>
+            <a href="#organisation" class="mobile-link py-3 border-b border-gray-100">Organisation des cours</a>
+            <a href="#parcoursup" class="mobile-link py-3 border-b border-gray-100">Conseils Parcoursup</a>
+            <a href="#metiers" class="mobile-link py-3 border-b border-gray-100">Débouchés</a>
+            <a href="#lieux" class="mobile-link py-3 border-b border-gray-100">Campus d'enseignement</a>
+            <a href="#vie-etudiante" class="mobile-link py-3 border-b border-gray-100">Vie étudiante</a>
+        </nav>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-6 pt-24 lg:pt-32 pb-24 flex flex-col lg:flex-row gap-12 relative">
+
+        <main class="w-full lg:w-3/4 space-y-20">
+<header class="relative py-12 lg:py-20 text-center overflow-hidden animate-fade-in">
+                
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-50/50 rounded-full blur-3xl -z-10"></div>
+
+                <div class="relative z-10 max-w-5xl mx-auto px-4">
+                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-brand/20 shadow-sm mb-8 transform hover:scale-105 transition duration-300">
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-brand"></span>
+                        </span>
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-gray-500">Portes Ouvertes 2026</span>
+                    </div>
+
+                    <h1 class="text-5xl lg:text-7xl font-black text-dark tracking-tight leading-none mb-6">
+                        GUIDE DES <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand to-orange-600">JPO</span>
+                        <br>
+                        <span class="relative inline-block mt-2 lg:mt-4">
+                            <span class="relative z-10">LICENCE DE DROIT</span>
+                            <svg class="absolute w-[110%] h-4 -bottom-2 -left-[5%] text-brand opacity-30 -z-0" viewBox="0 0 200 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.00025 6.99997C21.5002 6.49999 120.0002 -1.00004 198.0002 2.50001" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+                        </span>
+                    </h1>
+
+                    <p class="text-2xl lg:text-4xl font-hand text-gray-500 rotate-2 mt-4 transform origin-center">
+                        à Paris 1 Panthéon-Sorbonne
+                    </p>
+                </div>
+            </header>
+<section id="bienvenue" class="animate-fade-in">
+                <div class="bg-white rounded-[2.5rem] p-8 lg:p-10 border border-gray-100 shadow-xl shadow-brand/5 relative overflow-hidden">
+                    
+                    <div class="flex flex-col-reverse lg:flex-row items-center gap-8 mb-10">
+                        <div class="lg:w-3/4">
+                            <span class="font-hand text-brand text-2xl lg:text-3xl mb-2 block">Salut futur(e) juriste ! 👋</span>
+                            <h2 class="text-3xl lg:text-4xl font-extrabold text-dark mb-4">L'AsEED Sorbonne est là pour toi.</h2>
+                            <p class="text-gray-600 leading-relaxed text-sm lg:text-base">
+                                Tu t'apprêtes peut-être à rejoindre la plus grande fac de droit de France. Ça fait rêver, mais ça peut aussi impressionner ! <br>
+                                <strong>Pas de panique :</strong> l'AsEED (l'asso des étudiants en droit) est là pour t'épauler dès ton arrivée. Depuis 2010, on a une mission simple : faire de tes années à la Sorbonne les meilleures de ta vie.
+                            </p>
+                        </div>
+                        <div class="lg:w-1/4 flex justify-center">
+                            <div class="w-32 h-32 lg:w-40 lg:h-40 bg-gray-50 rounded-full flex items-center justify-center border-4 border-white shadow-lg transform rotate-3 hover:rotate-0 transition duration-500">
+                                <img src="logo.png" alt="Logo AsEED" class="w-24 h-auto lg:w-28 object-contain">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        
+                        <div class="bg-gray-50 p-5 rounded-2xl border border-gray-100 hover:border-brand/30 hover:shadow-md transition group">
+                            <div class="text-3xl mb-3 group-hover:scale-110 transition duration-300 inline-block">📢</div>
+                            <h3 class="font-bold text-dark mb-2">Représentation étudiante</h3>
+                            <p class="text-xs text-gray-600 leading-relaxed">
+                                L'AsEED porte la voix des étudiant.es dans les différentes instances décisionnaires de l'université, toujours dans l'intérêt des étudiants, et de façon apartisane et indépendante !
+                            </p>
+                        </div>
+
+                        <div class="bg-gray-50 p-5 rounded-2xl border border-gray-100 hover:border-brand/30 hover:shadow-md transition group">
+                            <div class="text-3xl mb-3 group-hover:scale-110 transition duration-300 inline-block">🎉</div>
+                            <h3 class="font-bold text-dark mb-2">Animation de la vie étudiante</h3>
+                            <p class="text-xs text-gray-600 leading-relaxed">
+                                La fac, c'est aussi des rencontres ! Week-end d’intégration, soirées, Ski Sorbonne, Gala... L'AsEED est présente pour créer tes meilleurs souvenirs.
+                            </p>
+                        </div>
+
+                        <div class="bg-gray-50 p-5 rounded-2xl border border-gray-100 hover:border-brand/30 hover:shadow-md transition group">
+                            <div class="text-3xl mb-3 group-hover:scale-110 transition duration-300 inline-block">📚</div>
+                            <h3 class="font-bold text-dark mb-2">Culture et Sorties juridiques</h3>
+                            <p class="text-xs text-gray-600 leading-relaxed">
+                                L'AsEED organise également des sorties juridiques, des conférences ou encore des sorties culturelles! 
+                            </p>
+                        </div>
+
+                        <div class="bg-gray-50 p-5 rounded-2xl border border-gray-100 hover:border-brand/30 hover:shadow-md transition group">
+                            <div class="text-3xl mb-3 group-hover:scale-110 transition duration-300 inline-block">🏛</div>
+                            <h3 class="font-bold text-dark mb-2">Orientation</h3>
+                            <p class="text-xs text-gray-600 leading-relaxed">
+                               L'AsEED c'est aussi l'organisation de conférences sur les métiers du droit, le brunch des masters ou encore des ateliers lettres de motivations ! Tout pour t'accompagner vers l'avenir !
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+
+<section id="universite" class="py-8 animate-fade-in">
+                <div class="max-w-5xl mx-auto bg-white rounded-[2.5rem] p-8 lg:p-12 border border-gray-100 shadow-xl shadow-brand/5 relative overflow-hidden">
+                    
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-brand-50 rounded-bl-full -mr-16 -mt-16 opacity-50 pointer-events-none"></div>
+                    <div class="absolute bottom-0 left-0 w-40 h-40 bg-gray-50 rounded-tr-full -ml-12 -mb-12 opacity-50 pointer-events-none"></div>
+
+                    <div class="relative z-10">
+                        <div class="text-center mb-10">
+                            <span class="font-hand text-brand text-3xl">Héritage & Ouverture</span>
+                            <h2 class="text-3xl lg:text-4xl font-extrabold text-dark mt-2">L'Université Paris 1 Panthéon-Sorbonne</h2>
+                            <div class="w-20 h-1 bg-brand rounded-full mx-auto mt-6"></div>
+                        </div>
+
+                        <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start mb-10">
+                            
+                            <div class="space-y-6 text-gray-600 leading-relaxed text-justify">
+                                <p>
+                                    <span class="text-4xl float-left mr-2 mt-[-6px] font-hand text-brand">H</span>
+                                    éritière du glorieux collège fondé par <strong>Robert de Sorbon au XIIIe siècle</strong>, l'université Paris 1 Panthéon-Sorbonne associe cet héritage historique à un projet pluridisciplinaire novateur. Première université française en sciences humaines et sociales (SHS), elle cultive depuis 1971 un esprit unique mêlant exigence scientifique et ambition de transformer le monde par le savoir.
+                                </p>
+                                <p>
+                                    Implantée sur <strong>25 sites franciliens</strong> et ouverte sur l'Europe via l'alliance <em>Una Europa</em>, elle accompagne près de <strong>45 000 étudiants</strong> par an. Grâce à son exceptionnel éventail de disciplines, elle forme des chercheurs, des professionnels du droit, des cadres et des artistes, en s'appuyant sur l'un des plus grands réseaux d’alumni du continent.
+                                </p>
+                            </div>
+
+                            <div class="space-y-6">
+                                
+                                <div class="bg-gray-50 p-6 rounded-2xl border border-gray-200">
+                                    <h3 class="font-bold text-dark flex items-center gap-2 mb-3">
+                                        <i class="ph-fill ph-student text-brand text-xl"></i>
+                                        Former des citoyens critiques
+                                    </h3>
+                                    <p class="text-sm text-gray-600 leading-relaxed">
+                                        Au-delà des savoirs académiques, l'université forme des citoyens capables d'analyser le monde qui les entoure et d'imaginer des <strong>solutions concrètes</strong> face aux nouveaux enjeux de notre société.
+                                    </p>
+                                </div>
+
+                                <div class="bg-brand-50 p-6 rounded-2xl border border-brand-100 relative">
+                                    <i class="ph-duotone ph-globe-hemisphere-west absolute top-4 right-4 text-4xl text-brand opacity-20"></i>
+                                    <h3 class="font-bold text-brand-600 flex items-center gap-2 mb-3">
+                                        <i class="ph-fill ph-heart text-xl"></i>
+                                        Une ambition humaniste
+                                    </h3>
+                                    <p class="text-sm text-gray-700 italic font-medium leading-relaxed">
+                                        « Replacer l’humain au cœur de l’approche scientifique, pour des sciences plus humaines ainsi que pour une société plus juste et durable. »
+                                    </p>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <a href="https://www.pantheonsorbonne.fr/universite/presentation" target="_blank" class="inline-flex items-center gap-2 bg-dark text-white px-8 py-3 rounded-full font-bold hover:bg-brand transition duration-300 shadow-lg hover:shadow-brand/20 group transform hover:-translate-y-1">
+                                Découvrir l'université
+                                <i class="ph-bold ph-arrow-up-right group-hover:translate-x-1 transition-transform"></i>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+            <section id="chiffres" class="animate-fade-in py-8 lg:py-12">
+                
+                <div class="text-center max-w-4xl mx-auto mb-12">
+                    <span class="font-hand text-brand text-3xl">Quelques Chiffres</span>
+                    <h2 class="text-3xl lg:text-4xl font-extrabold text-dark mt-2 mb-6">La Sorbonne : un défi à votre portée.</h2>
+                    <p class="text-gray-600 font-medium leading-relaxed text-lg">
+                        Intégrer la Sorbonne peut impressionner, mais il ne faut pas s'autocensurer. Si l'exigence académique est réelle, elle n'est pas insurmontable, bien au contraire.<br>
+                        Oubliez les idées reçues : ici, le travail régulier est presque toujours synonyme de réussite. Voici quelques chiffres pour vous donner une idée !
+                    </p>
+                </div>
+
+                <div class="mb-12">
+                    <h3 class="flex items-center gap-3 text-xl font-bold text-dark mb-6 border-b border-gray-200 pb-2">
+                        <span class="bg-dark text-white w-8 h-8 rounded-lg flex items-center justify-center text-sm"><i class="ph-bold ph-bank"></i></span>
+                        Une Université Reconnue
+                    </h3>
+                    
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm text-center hover:-translate-y-1 transition duration-300">
+                            <div class="inline-flex items-center justify-center w-12 h-12 bg-yellow-50 rounded-full text-yellow-600 mb-3 text-2xl"><i class="ph-fill ph-trophy"></i></div>
+                            <div class="text-3xl lg:text-4xl font-black text-dark mb-1">1ère</div>
+                            <div class="text-xs font-bold text-gray-500 uppercase tracking-wide">Faculté de Droit (QS 2024)</div>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm text-center hover:-translate-y-1 transition duration-300">
+                            <div class="text-3xl lg:text-4xl font-black text-brand mb-1">16k</div>
+                            <div class="text-xs font-bold text-gray-500 uppercase tracking-wide">Étudiants en droit</div>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm text-center hover:-translate-y-1 transition duration-300">
+                            <div class="text-3xl lg:text-4xl font-black text-dark mb-1">135</div>
+                            <div class="text-xs font-bold text-gray-500 uppercase tracking-wide">Enseignants</div>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm text-center hover:-translate-y-1 transition duration-300">
+                            <div class="text-3xl lg:text-4xl font-black text-brand mb-1">7</div>
+                            <div class="text-xs font-bold text-gray-500 uppercase tracking-wide">Doubles-Licences</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-8">
+
+                    <div class="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm">
+                        <h3 class="flex items-center gap-3 text-xl font-bold text-dark mb-6">
+                            <span class="bg-brand text-white w-8 h-8 rounded-lg flex items-center justify-center text-sm"><i class="ph-bold ph-users"></i></span>
+                            Profil de la promo L1 (2025-2026)
+                        </h3>
+
+                        <div class="space-y-6">
+                            <div>
+                                <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Répartition par sexe</h4>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="bg-gray-50 p-4 rounded-xl text-center border border-gray-100">
+                                        <span class="block text-2xl font-black text-dark">79%</span>
+                                        <span class="text-xs text-gray-500 font-bold uppercase flex justify-center items-center gap-1"><i class="ph-bold ph-gender-female"></i> Femmes</span>
+                                    </div>
+                                    <div class="bg-gray-50 p-4 rounded-xl text-center border border-gray-100">
+                                        <span class="block text-2xl font-black text-gray-400">21%</span>
+                                        <span class="text-xs text-gray-400 font-bold uppercase flex justify-center items-center gap-1"><i class="ph-bold ph-gender-male"></i> Hommes</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Lieu d'obtention du Bac</h4>
+                                <div class="flex h-6 rounded-full overflow-hidden mb-3 shadow-inner">
+                                    <div class="bg-brand w-[18%] flex items-center justify-center text-[10px] text-white font-bold" title="Paris">15%</div>
+                                    <div class="bg-brand-100 w-[44%] flex items-center justify-center text-[10px] text-brand-600 font-bold" title="IDF">43%</div>
+                                    <div class="bg-gray-200 w-[21%] flex items-center justify-center text-[10px] text-gray-600 font-bold" title="Province">21%</div>
+                                    <div class="bg-gray-800 w-[17%] flex items-center justify-center text-[10px] text-white font-bold" title="Étranger">21%</div>
+                                </div>
+                                <ul class="grid grid-cols-2 gap-2 text-xs font-medium text-gray-600">
+                                    <li class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-brand"></span> Paris (15%)</li>
+                                    <li class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-brand-100"></span> Île-de-France (43%)</li>
+                                    <li class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-gray-200"></span> Province (21%)</li>
+                                    <li class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-gray-800"></span> Étranger (21%)</li>
+                                </ul>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4 pt-2">
+                                <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                                    <strong class="block text-xl font-black text-dark mb-1">92%</strong>
+                                    <span class="text-xs text-gray-500 leading-tight block">sont issus d'un <strong>Bac Général</strong></span>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                                    <strong class="block text-xl font-black text-dark mb-1">99%</strong>
+                                    <span class="text-xs text-gray-500 leading-tight block">des admis ont une <strong>Mention</strong></span>
+                                </div>
+                            </div>
+                        </div><div class="mt-6 pt-6 border-t border-gray-100">
+                                <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Top 5 des Spécialités en Terminale</h4>
+                                
+                                <div class="space-y-3">
+                                    <div>
+                                        <div class="flex justify-between text-xs font-bold mb-1">
+                                            <span class="text-dark">HGGSP (Hist-Géo, Géopo...)</span>
+                                            <span class="text-brand">71%</span>
+                                        </div>
+                                        <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                            <div class="h-full bg-brand w-[71%]"></div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div class="flex justify-between text-xs font-bold mb-1">
+                                            <span class="text-dark">SES (Sciences Éco)</span>
+                                            <span class="text-brand">58%</span>
+                                        </div>
+                                        <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                            <div class="h-full bg-brand w-[58%]"></div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div class="flex justify-between text-xs font-bold mb-1">
+                                            <span class="text-dark">Mathématiques</span>
+                                            <span class="text-brand opacity-80">25%</span>
+                                        </div>
+                                        <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                            <div class="h-full bg-brand/60 w-[25%]"></div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div class="flex justify-between text-xs font-bold mb-1">
+                                            <span class="text-dark">Humanités, Littérature, Philo</span>
+                                            <span class="text-brand opacity-60">18%</span>
+                                        </div>
+                                        <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                            <div class="h-full bg-brand/40 w-[18%]"></div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div class="flex justify-between text-xs font-bold mb-1">
+                                            <span class="text-dark">Langues (LLCER)</span>
+                                            <span class="text-brand opacity-60">17%</span>
+                                        </div>
+                                        <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                            <div class="h-full bg-brand/30 w-[17%]"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-4 bg-blue-50 border border-blue-100 p-3 rounded-xl flex gap-3 items-start">
+                                    <i class="ph-fill ph-info text-blue-600 mt-0.5"></i>
+                                    <p class="text-[10px] text-blue-800 leading-tight font-medium">
+                                        <strong>Pas de panique !</strong> Si HGGSP et SES dominent, tous les profils sont acceptés (Maths, Scientifiques, Littéraires...). La diversité est une force !
+                                    </p>
+                                </div>
+                            </div>
+                    </div>
+
+                    <div class="flex flex-col gap-6">
+                        
+                        <div class="bg-green-50 rounded-3xl p-8 border border-green-100 relative overflow-hidden group hover:shadow-md transition">
+                            <div class="relative z-10">
+                                <h3 class="flex items-center gap-2 text-green-800 font-bold mb-2">
+                                    <i class="ph-fill ph-check-circle text-xl"></i> Un taux de réussite élevé
+                                </h3>
+                                <div class="flex items-baseline gap-2">
+                                    <span class="text-5xl lg:text-6xl font-black text-green-600">84%</span>
+                                    <span class="text-lg text-green-800 font-bold">de réussite</span>
+                                </div>
+                                <p class="text-sm text-green-700 mt-2 font-medium">
+                                    Pour les néo-bacheliers présents aux examens. (2023-2024) <br>
+                                    <span class="text-xs opacity-80 block mt-1">Contrairement aux idées reçues, l'échec n'est pas une fatalité. Si vous travaillez, vous passerez !</span>
+                                </p>
+                            </div>
+                            <i class="ph-duotone ph-student absolute bottom-[-20px] right-[-20px] text-[10rem] text-green-100 group-hover:scale-110 transition duration-500"></i>
+                        </div>
+
+                        <div class="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm flex-1">
+                            <h3 class="flex items-center gap-3 text-xl font-bold text-dark mb-6">
+                                <span class="bg-brand text-white w-8 h-8 rounded-lg flex items-center justify-center text-sm"><i class="ph-bold ph-hourglass"></i></span>
+                                Rythme & Adaptation
+                            </h3>
+                            
+                            <div class="space-y-6">
+                                <div class="flex gap-4 items-start">
+                                    <div class="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center text-brand font-bold shrink-0">87%</div>
+                                    <div>
+                                        <strong class="block text-dark text-sm">Le saut vers la fac</strong>
+                                        <p class="text-xs text-gray-600">87% des étudiants trouvent la charge plus lourde qu'en Terminale. C'est normal d'être surpris au début !</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex gap-4 items-start">
+                                    <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold shrink-0">15h</div>
+                                    <div>
+                                        <strong class="block text-dark text-sm">Travail personnel hebdo</strong>
+                                        <p class="text-xs text-gray-600">La majorité travaille entre 10h et 20h à la maison. L'organisation est la clé (65% ont du mal à prioriser au début).</p>
+                                    </div>
+                                </div>
+
+                                <div class="pt-4 border-t border-gray-100">
+                                    <div class="flex justify-between items-center bg-gray-50 px-4 py-3 rounded-xl">
+                                        <span class="text-sm font-bold text-gray-700">Taux de satisfaction global</span>
+                                        <span class="text-2xl font-black text-brand">85% <span class="text-lg">😊</span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="mt-8 text-center">
+                    <p class="text-[10px] text-gray-400 italic">
+                        Source : Université Paris 1 - DPEIP ORIVE Janvier 2025
+                    </p>
+                </div>
+
+            </section>
+
+            <section id="programme">
+                <div class="flex flex-col sm:flex-row justify-between items-end mb-8 gap-4">
+                    <h2 class="text-2xl lg:text-3xl font-extrabold text-dark flex items-center gap-3">
+                        <span class="bg-brand text-white w-10 h-10 rounded-lg flex items-center justify-center text-xl"><i class="ph-bold ph-graduation-cap"></i></span>
+                        Programme de la Licence à Paris 1
+                    </h2>
+                    <div class="flex bg-white p-1 rounded-xl border border-gray-200 shadow-sm">
+                        <button onclick="switchTab('l1')" id="tab-btn-l1" class="px-4 py-2 rounded-lg text-sm font-bold bg-dark text-white shadow transition">Licence 1</button>
+                        <button onclick="switchTab('l2')" id="tab-btn-l2" class="px-4 py-2 rounded-lg text-sm font-bold text-gray-500 hover:bg-gray-50 transition">Licence 2</button>
+                        <button onclick="switchTab('l3')" id="tab-btn-l3" class="px-4 py-2 rounded-lg text-sm font-bold text-gray-500 hover:bg-gray-50 transition">Licence 3</button>
+                    </div>
+                </div>
+
+  <div id="tab-l1" class="space-y-8 animate-fade-in">
+                    
+                    <div class="bg-white p-6 lg:p-8 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-2 h-full bg-brand"></div>
+                        <div class="flex items-center gap-3 mb-6">
+                            <span class="text-3xl"></span>
+                            <h3 class="font-black text-2xl text-dark">Semestre 1</h3>
+                            <span class="bg-brand-50 text-brand px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Septembre - Décembre</span>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div>
+                                <h4 class="font-bold text-lg text-dark mb-4 flex items-center gap-2"><i class="ph-fill ph-star text-brand"></i> Enseignements Fondamentaux</h4>
+                                <p class="text-xs text-gray-500 mb-3 italic">3 cours obligatoires avec Travaux Dirigés (TD)</p>
+                                <ul class="space-y-3">
+                                    <li class="bg-gray-50 p-3 rounded-xl border-l-4 border-brand">
+                                        <div class="flex justify-between items-start">
+                                            <strong class="text-dark text-sm">Droit Privé</strong>
+                                            <span class="text-[10px] bg-white border border-gray-200 px-2 py-0.5 rounded text-gray-500 font-bold">Annualisé*</span>
+                                        </div>
+                                        <p class="text-xs text-gray-600 mt-1">Introduction générale au droit et droit des personnes.</p>
+                                    </li>
+                                    <li class="bg-gray-50 p-3 rounded-xl border-l-4 border-brand">
+                                        <div class="flex justify-between items-start">
+                                            <strong class="text-dark text-sm">Droit Constitutionnel</strong>
+                                            <span class="text-[10px] bg-white border border-gray-200 px-2 py-0.5 rounded text-gray-500 font-bold">Annualisé*</span>
+                                        </div>
+                                        <p class="text-xs text-gray-600 mt-1">Théorie générale de l'État et Constitution.</p>
+                                    </li>
+                                    <li class="bg-gray-50 p-3 rounded-xl border-l-4 border-brand">
+                                        <strong class="text-dark text-sm block">Introduction Historique au Droit</strong>
+                                        <p class="text-xs text-gray-600 mt-1">Comprendre les racines du droit actuel.</p>
+                                    </li>
+                                </ul>
+                                <p class="text-[10px] text-gray-400 mt-2">*Annualisé = Matière étudiée sur les 2 semestres. Examen final unique en fin de S2.</p>
+                            </div>
+
+                            <div>
+                                <h4 class="font-bold text-lg text-dark mb-4 flex items-center gap-2"><i class="ph-fill ph-books text-brand"></i> Enseignements Transversaux</h4>
+                                <p class="text-xs text-gray-500 mb-3 italic">Sans TD - Uniquement en Amphi</p>
+                                
+                                <div class="space-y-4">
+                                    <div class="bg-white border border-gray-100 p-3 rounded-xl shadow-sm">
+                                        <strong class="text-brand text-xs uppercase block mb-1">3 Cours Obligatoires</strong>
+                                        <ul class="text-sm text-gray-700 space-y-1">
+                                            <li>• Droit civil (Personnes)</li>
+                                            <li>• Institutions juridictionnelles & grands procès</li>
+                                            <li>• Grands enjeux juridiques contemporains</li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="bg-white border border-gray-100 p-3 rounded-xl shadow-sm">
+                                        <strong class="text-brand text-xs uppercase block mb-1">1 Cours au Choix</strong>
+                                        <ul class="text-sm text-gray-700 space-y-1">
+                                            <li><div class="w-2 h-2 rounded-full bg-gray-200 inline-block mr-1"></div> Science Politique</li>
+                                            <li><div class="w-2 h-2 rounded-full bg-gray-200 inline-block mr-1"></div> Économie et Droit</li>
+                                            <li><div class="w-2 h-2 rounded-full bg-gray-200 inline-block mr-1"></div> Histoire des idées politiques</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="flex items-center gap-2 text-xs font-bold text-gray-500 bg-gray-50 px-3 py-2 rounded-lg">
+                                        <i class="ph-bold ph-translate"></i> + Anglais ou Espagnol Juridique
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 lg:p-8 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-2 h-full bg-dark"></div>
+                        <div class="flex items-center gap-3 mb-6">
+                            <span class="text-3xl"></span>
+                            <h3 class="font-black text-2xl text-dark">Semestre 2</h3>
+                            <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Janvier - Mai</span>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-8">
+                            
+                            <div>
+                                <h4 class="font-bold text-lg text-dark mb-4 flex items-center gap-2"><i class="ph-fill ph-star text-brand"></i> Enseignements Fondamentaux</h4>
+                                <p class="text-xs text-gray-500 mb-3 italic">2 cours obligatoires avec Travaux Dirigés (TD)</p>
+                                <ul class="space-y-3">
+                                <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 mb-4">
+                                    <ul class="space-y-2">
+                                        <li class="flex justify-between items-center text-sm font-bold text-gray-800">
+                                            <span>Droit Privé (Suite)</span>
+                                            <i class="ph-bold ph-check-circle text-brand"></i>
+                                        </li>
+                                        <li class="flex justify-between items-center text-sm font-bold text-gray-800">
+                                            <span>Droit Constitutionnel (Suite)</span>
+                                            <i class="ph-bold ph-check-circle text-brand"></i>
+                                        </li>
+                                    </ul>
+                                    <div class="mt-3 pt-3 border-t border-gray-200 text-xs text-brand font-bold flex items-center gap-2">
+                                        <i class="ph-bold ph-warning"></i> Examens finaux pour valider l'année entière !
+                                    </div>
+                                </div>
+
+                                <div class="bg-green-50 p-4 rounded-xl border border-green-100">
+                                    <h5 class="text-green-800 font-bold text-sm mb-2 flex items-center gap-2"><i class="ph-fill ph-plant"></i> 1 Cours "Nouveaux Enjeux" (Sans TD)</h5>
+                                    <p class="text-xs text-green-700 mb-2">Au choix parmi :</p>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="bg-white text-green-700 border border-green-200 px-2 py-1 rounded text-xs font-bold">Dév. Durable & Transitions</span>
+                                        <span class="bg-white text-green-700 border border-green-200 px-2 py-1 rounded text-xs font-bold">Numérique & IA</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 class="font-bold text-lg text-dark mb-4 flex items-center gap-2"><i class="ph-fill ph-list-checks text-brand"></i> Enseignements Transversaux</h4>
+                                <p class="text-xs text-gray-500 mb-3 leading-relaxed">Tu dois choisir <strong>4 cours</strong> parmi la liste ci-dessous. <br>⚠️ <strong>Important :</strong> Tu devras en choisir <u>un seul</u> avec TD (noté en contrôle continu intégral).</p>
+                                
+                                <div class="bg-white border-2 border-dashed border-brand/30 p-4 rounded-xl">
+                                    <strong class="text-brand text-sm block mb-3">Les 4 matières au choix :</strong>
+                                    <ul class="grid grid-cols-2 gap-2 text-xs font-bold text-gray-700">
+                                        <li class="bg-gray-50 p-2 rounded flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-brand"></div> Droit Pénal</li>
+                                        <li class="bg-gray-50 p-2 rounded flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-brand"></div> Droit civil des biens</li>
+                                        <li class="bg-gray-50 p-2 rounded flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-brand"></div> Finances Publiques</li>
+                                        <li class="bg-gray-50 p-2 rounded flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-brand"></div> Relations Internationales</li>
+                                    </ul>
+                                </div>
+
+                                <div class="mt-4 flex items-center gap-2 text-xs font-bold text-gray-500 bg-gray-50 px-3 py-2 rounded-lg">
+                                    <i class="ph-bold ph-translate"></i> + Anglais ou Espagnol Juridique
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-l2" class="hidden space-y-8 animate-fade-in">
+                    
+                    <div class="bg-white p-6 lg:p-8 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-2 h-full bg-blue-600"></div>
+                        <div class="flex items-center gap-3 mb-6">
+                            <span class="text-3xl"></span>
+                            <h3 class="font-black text-2xl text-dark">Semestre 3</h3>
+                            <span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Septembre - Decembre</span>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div>
+                                <h4 class="font-bold text-lg text-dark mb-4 flex items-center gap-2"><i class="ph-fill ph-columns text-blue-600"></i> Enseignements Fondamentaux</h4>
+                                <p class="text-xs text-gray-500 mb-3 italic">2 cours obligatoires avec TD (Annualisés)</p>
+                                <ul class="space-y-3">
+                                    <li class="bg-gray-50 p-3 rounded-xl border-l-4 border-blue-600">
+                                        <div class="flex justify-between items-start">
+                                            <strong class="text-dark text-sm">Droit des Obligations</strong>
+                                            <span class="text-[10px] bg-white border border-gray-200 px-2 py-0.5 rounded text-gray-500 font-bold">Annualisé*</span>
+                                        </div>
+                                        <p class="text-xs text-gray-600 mt-1">Contrats</p>
+                                    </li>
+                                    <li class="bg-gray-50 p-3 rounded-xl border-l-4 border-blue-600">
+                                        <div class="flex justify-between items-start">
+                                            <strong class="text-dark text-sm">Droit Administratif</strong>
+                                            <span class="text-[10px] bg-white border border-gray-200 px-2 py-0.5 rounded text-gray-500 font-bold">Annualisé*</span>
+                                        </div>
+                                        <p class="text-xs text-gray-600 mt-1"></p>
+                                    </li>
+                                </ul>
+                                <p class="text-[10px] text-gray-400 mt-2">*Matières étudiées sur les 2 semestres (S3+S4), examens en fin de S4.</p>
+                            </div>
+
+                            <div>
+                                <h4 class="font-bold text-lg text-dark mb-4 flex items-center gap-2"><i class="ph-fill ph-list-checks text-blue-600"></i> Matières au choix</h4>
+                                
+                                <div class="bg-white border border-gray-100 p-4 rounded-xl shadow-sm mb-4">
+                                    <strong class="text-blue-600 text-xs uppercase block mb-2">Choix de 4 matières :</strong>
+                                    <p class="text-[10px] text-gray-500 mb-3 italic">Dont 1 avec TD (CC Intégral) + 3 sans TD (Examen terminal).</p>
+                                    <ul class="grid grid-cols-2 gap-2 text-xs font-bold text-gray-700">
+                                        <li class="bg-gray-50 p-2 rounded flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-blue-600"></div> Droit des affaires</li>
+                                        <li class="bg-gray-50 p-2 rounded flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-blue-600"></div> Procédure pénale</li>
+                                        <li class="bg-gray-50 p-2 rounded flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-blue-600"></div> Droit européen</li>
+                                        <li class="bg-gray-50 p-2 rounded flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-blue-600"></div> Droit inter. public 1</li>
+                                    </ul>
+                                </div>
+
+                                <div class="space-y-2">
+                                    <div class="flex items-center gap-2 text-xs font-bold text-gray-600 bg-gray-50 px-3 py-2 rounded-lg border border-gray-100">
+                                        <i class="ph-bold ph-hourglass"></i> + 1 Histoire du Droit (Obligations, Admin ou Pénal)
+                                    </div>
+                                    <div class="flex items-center gap-2 text-xs font-bold text-gray-600 bg-gray-50 px-3 py-2 rounded-lg border border-gray-100">
+                                        <i class="ph-bold ph-translate"></i> + Langue (Anglais juridique ou Espagnol juridique)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 lg:p-8 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-2 h-full bg-purple-600"></div>
+                        <div class="flex items-center gap-3 mb-6">
+                            <span class="text-3xl"></span>
+                            <h3 class="font-black text-2xl text-dark">Semestre 4</h3>
+                            <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Janvier - Mai</span>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-8">
+                            
+                            <div>
+                                <h4 class="font-bold text-lg text-dark mb-4 flex items-center gap-2"><i class="ph-fill ph-columns text-purple-600"></i> Enseignements Fondamentaux</h4>
+                                <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 mb-4">
+                                    <ul class="space-y-2">
+                                        <li class="bg-gray-50 p-3 rounded-xl border-l-4 border-purple-600">
+                                        <div class="flex justify-between items-start">
+                                            <strong class="text-dark text-sm">Droit des Obligations</strong>
+                                            <span class="text-[10px] bg-white border border-gray-200 px-2 py-0.5 rounded text-gray-500 font-bold">Annualisé*</span>
+                                        </div>
+                                        <p class="text-xs text-gray-600 mt-1">Responsabilité civile</p>
+                                    </li>
+                                    <li class="bg-gray-50 p-3 rounded-xl border-l-4 border-purple-600">
+                                        <div class="flex justify-between items-start">
+                                            <strong class="text-dark text-sm">Droit Administratif</strong>
+                                            <span class="text-[10px] bg-white border border-gray-200 px-2 py-0.5 rounded text-gray-500 font-bold">Annualisé*</span>
+                                        </div>
+                                    </ul>
+                                    <div class="mt-3 pt-3 border-t border-gray-200 text-xs text-purple-600 font-bold flex items-center gap-2">
+                                        <i class="ph-bold ph-warning"></i> Examens du S1 et S2 à la fin du S2
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 class="font-bold text-lg text-dark mb-4 flex items-center gap-2"><i class="ph-fill ph-squares-four text-purple-600"></i> Matières au choix</h4>
+                                
+                                <div class="bg-white border border-gray-100 p-4 rounded-xl shadow-sm mb-4">
+                                    <strong class="text-purple-600 text-xs uppercase block mb-2">Choix de 4 matières :</strong>
+                                    <p class="text-[10px] text-gray-500 mb-3 italic">Dont 1 avec TD (CC Intégral) + 3 sans TD (Examen terminal).</p>
+                                    <ul class="grid grid-cols-1 gap-2 text-xs font-bold text-gray-700">
+                                        <li class="bg-gray-50 p-2 rounded flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-purple-600"></div> Relations individuelles du travail</li>
+                                        <li class="bg-gray-50 p-2 rounded flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-purple-600"></div> Droit des sociétés I</li>
+                                        <li class="bg-gray-50 p-2 rounded flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-purple-600"></div> Droit fiscal</li>
+                                        <li class="bg-gray-50 p-2 rounded flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-purple-600"></div> Système juridique de l'UE</li>
+                                        <li class="bg-gray-50 p-2 rounded flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-purple-600"></div> Droit pénal spécial</li>
+                                    </ul>
+                                </div>
+
+                                <div class="space-y-2">
+                                    <div class="flex items-center gap-2 text-xs font-bold text-gray-600 bg-gray-50 px-3 py-2 rounded-lg border border-gray-100">
+                                        <i class="ph-bold ph-hourglass"></i> + 1 Histoire (Droit de la Famille, Institutions de l'Antiquité, Droit des Affaires...) ou Grands enjeux juridiques et pratique professionnelle
+                                    </div>
+                                    <div class="flex items-center gap-2 text-xs font-bold text-gray-600 bg-gray-50 px-3 py-2 rounded-lg border border-gray-100">
+                                        <i class="ph-bold ph-translate"></i> + Langue (Anglais juridique ou Espagnol juridique)
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-l3" class="hidden space-y-8 animate-fade-in">
+                    
+                    <div class="bg-white p-6 lg:p-8 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-2 h-full bg-orange-600"></div>
+                        <div class="flex items-center gap-3 mb-6">
+                            <span class="text-3xl"></span>
+                            <h3 class="font-black text-2xl text-dark">Semestre 5</h3>
+                            <span class="bg-orange-50 text-orange-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Septembre - Décembre</span>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div>
+                                <h4 class="font-bold text-lg text-dark mb-4 flex items-center gap-2"><i class="ph-fill ph-columns text-orange-600"></i> Enseignements Fondamentaux</h4>
+                                <div class="bg-orange-50 p-4 rounded-xl border border-orange-200 mb-4">
+                                    <p class="text-xs text-orange-800 font-bold mb-2 flex items-center gap-2"><i class="ph-bold ph-check-circle"></i> Choix de 3 matières avec TD et 2 sans TD :</p>
+                                    <ul class="grid grid-cols-1 gap-2 text-xs font-semibold text-gray-700">
+                                        <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-orange-500"></div> Droit des libertés fondamentales</li>
+                                        <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-orange-500"></div> Droit administratif des biens</li>
+                                        <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-orange-500"></div> Droit public des affaires</li>
+                                        <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-orange-500"></div> Droit international public II</li>
+                                        <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-orange-500"></div> Régime de l'obligation</li>
+                                        <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-orange-500"></div> Contrats spéciaux</li>
+                                        <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-orange-500"></div> Droit judiciaire privé</li>
+                                        <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-orange-500"></div> Droit des sociétés II</li>
+                                        <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-orange-500"></div> Relations collectives de travail</li>
+                                    </ul>
+                                </div>
+                                <p class="text-[10px] text-gray-400 italic"></p>
+                            </div>
+
+                            <div>
+                                <h4 class="font-bold text-lg text-dark mb-4 flex items-center gap-2"><i class="ph-fill ph-list-plus text-orange-600"></i> Enseignements transversaux</h4>
+
+                                <div class="bg-white border border-gray-100 p-4 rounded-xl shadow-sm mb-4">
+                                    <strong class="text-orange-600 text-xs uppercase block mb-2">Choix de 2 matières transversales sans TD :</strong>
+                                    <ul class="grid grid-cols-1 gap-1 text-xs text-gray-600">
+                                        <li>• Théorie générale du droit</li>
+                                        <li>• Droit comparé</li>
+                                        <li>• Articulation des ordres juridiques</li>
+                                        <li>• Histoire de la justice et de la procédure</li>
+                                    </ul>
+                                </div>
+
+                                <div class="flex items-center gap-2 text-xs font-bold text-gray-600 bg-gray-50 px-3 py-2 rounded-lg border border-gray-100">
+                                    <i class="ph-bold ph-translate"></i> + Langue (Anglais juridique ou Espagnol juridique).
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 lg:p-8 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-2 h-full bg-red-600"></div>
+                        <div class="flex items-center gap-3 mb-6">
+                            <span class="text-3xl"></span>
+                            <h3 class="font-black text-2xl text-dark">Semestre 6</h3>
+                            <span class="bg-red-50 text-red-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Janvier - Mai</span>
+                        </div>
+
+                        <p class="text-gray-600 mb-6 text-sm">Le dernier semestre de la Licence est entièrement consacré à <strong>un seul projet</strong> au choix parmi 4 options :</p>
+
+                        <div class="grid md:grid-cols-2 gap-4">
+                            
+                            <div class="bg-gray-50 hover:bg-white hover:shadow-md transition p-4 rounded-2xl border border-gray-200">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center"><i class="ph-fill ph-briefcase"></i></div>
+                                    <h4 class="font-bold text-dark text-sm">UE 1.1 : Projet Professionnel</h4>
+                                </div>
+                                <p class="text-xs text-gray-600">Stage long en entreprise ou administration + Rapport de stage.</p>
+                            </div>
+
+                            <div class="bg-gray-50 hover:bg-white hover:shadow-md transition p-4 rounded-2xl border border-gray-200">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <div class="w-8 h-8 rounded-lg bg-green-100 text-green-600 flex items-center justify-center"><i class="ph-fill ph-airplane-tilt"></i></div>
+                                    <h4 class="font-bold text-dark text-sm">UE 1.2 : Projet International</h4>
+                                </div>
+                                <p class="text-xs text-gray-600">Mobilité internationale (Erasmus ou autre échange) d'un semestre.</p>
+                            </div>
+
+                            <div class="bg-gray-50 hover:bg-white hover:shadow-md transition p-4 rounded-2xl border border-gray-200">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <div class="w-8 h-8 rounded-lg bg-yellow-100 text-yellow-600 flex items-center justify-center"><i class="ph-fill ph-hand-heart"></i></div>
+                                    <h4 class="font-bold text-dark text-sm">UE 1.3 : Projet Personnel Alternatif</h4>
+                                </div>
+                                <p class="text-xs text-gray-600">Activités bénévoles + Rapport.</p>
+                            </div>
+
+                            <div class="bg-gray-50 hover:bg-white hover:shadow-md transition p-4 rounded-2xl border border-gray-200">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <div class="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center"><i class="ph-fill ph-student"></i></div>
+                                    <h4 class="font-bold text-dark text-sm">UE 1.4 : Projet de Recherche</h4>
+                                </div>
+                                <p class="text-xs text-gray-600">Rédaction d'un mémoire + Cours de préparation au Grand Oral et de méthodologie + Séminaires d'approfondissement + Langue juridique</p>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+<section id="organisation" class="py-12 animate-fade-in">
+                
+                <div class="text-center max-w-4xl mx-auto mb-12">
+                    <span class="font-hand text-brand text-3xl">Organisation des cours</span>
+                    <h2 class="text-3xl lg:text-4xl font-extrabold text-dark mt-2 mb-6">CM, TD, Partiels... C'est quoi ?</h2>
+                    <p class="text-gray-600 font-medium leading-relaxed text-lg">
+                        À la fac, fini le schéma "une classe, un prof, une salle". <br>
+                        L'enseignement repose sur deux piliers complémentaires qu'il faut absolument comprendre pour réussir.
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8 mb-12">
+                    
+                    <div class="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm relative overflow-hidden group hover:border-blue-200 transition">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-full -mr-4 -mt-4 z-0"></div>
+                        <div class="relative z-10">
+                            <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-2xl mb-6">
+                                <i class="ph-fill ph-presentation-chart"></i>
+                            </div>
+                            <h3 class="text-2xl font-black text-dark mb-2">Le Cours Magistral (CM)</h3>
+                            <span class="inline-block px-3 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded-full mb-4">La théorie</span>
+                            
+                            <ul class="space-y-4 text-gray-600">
+                                <li class="flex gap-3">
+                                    <i class="ph-bold ph-users-three text-xl text-blue-500 shrink-0"></i>
+                                    <div class="text-sm">
+                                        <strong>Grand format :</strong> Tu es dans un amphithéâtre (amphi) avec 200 à 500 autres étudiants.
+                                    </div>
+                                </li>
+                                <li class="flex gap-3">
+                                    <i class="ph-bold ph-ear text-xl text-blue-500 shrink-0"></i>
+                                    <div class="text-sm">
+                                        <strong>Écoute active :</strong> Le professeur (souvent un maître de conférences ou professeur agrégé) expose la matière. Il faut prendre des notes efficacement.
+                                    </div>
+                                </li>
+                                <li class="flex gap-3">
+                                    <i class="ph-bold ph-lock-open text-xl text-blue-500 shrink-0"></i>
+                                    <div class="text-sm">
+                                        <strong>Liberté (piège) :</strong> La présence n'est pas vérifiée. Personne ne te dira rien si tu viens pas, mais ne te laisse pas aller, rattraper plusieurs CM peut être difficile !
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm relative overflow-hidden group hover:border-brand/30 transition">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-brand-50 rounded-bl-full -mr-4 -mt-4 z-0"></div>
+                        <div class="relative z-10">
+                            <div class="w-12 h-12 bg-brand-50 text-brand rounded-xl flex items-center justify-center text-2xl mb-6">
+                                <i class="ph-fill ph-note-pencil"></i>
+                            </div>
+                            <h3 class="text-2xl font-black text-dark mb-2">Les Travaux Dirigés (TD)</h3>
+                            <span class="inline-block px-3 py-1 bg-brand-50 text-brand-600 text-xs font-bold rounded-full mb-4">La pratique</span>
+                            
+                            <ul class="space-y-4 text-gray-600">
+                                <li class="flex gap-3">
+                                    <i class="ph-bold ph-users text-xl text-brand shrink-0"></i>
+                                    <div class="text-sm">
+                                        <strong>Petit groupe :</strong> Comme au lycée, tu es dans une classe d'environ 30 étudiants avec un Chargé de TD (souvent un étudiant en doctorat ou un professionnel du droit).
+                                    </div>
+                                </li>
+                                <li class="flex gap-3">
+                                    <i class="ph-bold ph-student text-xl text-brand shrink-0"></i>
+                                    <div class="text-sm">
+                                        <strong>Obligatoire :</strong> La présence est vérifiée. Seules 3 absences motivées sont tolérées, au delà, tu peux être défaillant (0/20).
+                                    </div>
+                                </li>
+                                <li class="flex gap-3">
+                                    <i class="ph-bold ph-brain text-xl text-brand shrink-0"></i>
+                                    <div class="text-sm">
+                                        <strong>Travail maison :</strong> C'est là que tu prépares tes exercices (fiches d'arrêts, dissertations, cas pratiques) chaque semaine.
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+            </section>
+            
+<section id="parcoursup" class="bg-white rounded-[2.5rem] p-6 lg:p-12 shadow-xl border border-gray-100 relative overflow-hidden mt-12 scroll-mt-32">
+                <div class="relative z-10">
+                    
+                    <div class="text-center mb-12">
+                        <span class="font-hand text-brand text-3xl">Candidature</span>
+                        <h2 class="text-3xl lg:text-4xl font-extrabold text-dark mt-2">La licence de droit sur Parcoursup</h2>
+                        <p class="text-gray-500 mt-2 font-medium">Conseils, critères et dates clés</p>
+                    <div class="bg-white/10 px-4 py-2 rounded-xl text-center"><span class="block text-[10px] uppercase text-brand font-bold">Clôture des vœux</span><span class="font-bold">12 Mars</span></div>
+                    <div class="bg-white/10 px-4 py-2 rounded-xl text-center"><span class="block text-[10px] uppercase text-brand font-bold">Dossier complet et vœux confirmés</span><span class="font-bold">1er Avril</span></div>
+
+                    <div class="bg-gray-50 rounded-3xl p-6 lg:p-8 mb-12 border border-gray-100">
+                        <h3 class="text-xl font-bold text-center mb-6">Grille d'analyse des candidatures</h3>
+                        <div class="space-y-6 sm:space-y-4 max-w-3xl mx-auto">
+                            
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                                <span class="text-sm font-bold text-gray-700 sm:w-48">Résultats scolaires</span>
+                                <div class="w-full sm:flex-1 h-8 bg-gray-200 rounded-lg overflow-hidden relative">
+                                    <div class="absolute top-0 left-0 h-full bg-brand flex items-center justify-end pr-3 text-white font-bold text-xs shadow-sm" style="width: 60%;">60%</div>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                                <span class="text-sm font-bold text-gray-700 sm:w-48">Méthodes de travail</span>
+                                <div class="w-full sm:flex-1 h-8 bg-gray-200 rounded-lg overflow-hidden relative">
+                                    <div class="absolute top-0 left-0 h-full bg-slate-600 flex items-center justify-end pr-3 text-white font-bold text-xs shadow-sm" style="width: 20%;">20%</div>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                                <span class="text-sm font-bold text-gray-700 sm:w-48">Motivation</span>
+                                <div class="w-full sm:flex-1 h-8 bg-gray-200 rounded-lg overflow-hidden relative">
+                                    <div class="absolute top-0 left-0 h-full bg-slate-400 flex items-center justify-center text-white font-bold text-xs shadow-sm" style="width: 10%;">10%</div>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                                <span class="text-sm font-bold text-gray-700 sm:w-48">Savoir-être</span>
+                                <div class="w-full sm:flex-1 h-8 bg-gray-200 rounded-lg overflow-hidden flex items-center">
+                                    <div class="h-full bg-slate-300 shadow-sm" style="width: 5%;"></div>
+                                    <span class="pl-2 text-gray-500 font-bold text-xs">5%</span>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                                <span class="text-sm font-bold text-gray-700 sm:w-48">Engagement</span>
+                                <div class="w-full sm:flex-1 h-8 bg-gray-200 rounded-lg overflow-hidden flex items-center">
+                                    <div class="h-full bg-slate-300 shadow-sm" style="width: 5%;"></div>
+                                    <span class="pl-2 text-gray-500 font-bold text-xs">5%</span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                        <div class="space-y-3">
+                            <h4 class="font-bold text-dark border-b-2 border-brand/20 pb-2">Bien choisir ses vœux</h4>
+                            <ul class="space-y-2 text-sm text-gray-600">
+                                <li class="flex gap-2 items-start"><i class="ph-bold ph-check text-brand mt-1"></i> Diversifiez vos choix : visez des formations sélectives et non sélectives.</li>
+                                <li class="flex gap-2 items-start"><i class="ph-bold ph-check text-brand mt-1"></i> Ne limitez pas vos vœux aux établissements les plus demandés.</li>
+                                <li class="flex gap-2 items-start"><i class="ph-bold ph-check text-brand mt-1"></i> Consultez les critères d'admission et les attendus de chaque formation.</li>
+                            </ul>
+                        </div>
+                        <div class="space-y-3">
+                            <h4 class="font-bold text-dark border-b-2 border-brand/20 pb-2">Rédiger un projet motivé convaincant</h4>
+                            <ul class="space-y-2 text-sm text-gray-600">
+                                <li class="flex gap-2 items-start"><i class="ph-bold ph-check text-brand mt-1"></i> Exprimez clairement votre motivation pour chaque formation.</li>
+                                <li class="flex gap-2 items-start"><i class="ph-bold ph-check text-brand mt-1"></i> Montrez que vous avez compris les spécificités du programme.</li>
+                                <li class="flex gap-2 items-start"><i class="ph-bold ph-check text-brand mt-1"></i> Mettez en avant vos compétences, expériences et qualités en lien avec la formation.</li>
+                                <li class="flex gap-2 items-start"><i class="ph-bold ph-check text-brand mt-1"></i> Évitez les copier-coller d'un vœu à l'autre.</li>
+                            </ul>
+                        </div>
+                        <div class="space-y-3">
+                            <h4 class="font-bold text-dark border-b-2 border-brand/20 pb-2">Valoriser son parcours et ses expériences</h4>
+                            <ul class="space-y-2 text-sm text-gray-600">
+                                <li class="flex gap-2 items-start"><i class="ph-bold ph-check text-brand mt-1"></i> Expliquez vos engagements extrascolaires : bénévolat, sport, musique, etc.</li>
+                                <li class="flex gap-2 items-start"><i class="ph-bold ph-check text-brand mt-1"></i> Mettez en avant vos expériences professionnelles (stages, jobs d'été).</li>
+                                <li class="flex gap-2 items-start"><i class="ph-bold ph-check text-brand mt-1"></i> Décrivez vos projets personnels (création d'un blog, participation à un concours, etc.).</li>
+                            </ul>
+                        </div>
+                        <div class="space-y-3">
+                            <h4 class="font-bold text-dark border-b-2 border-brand/20 pb-2">Soigner l'orthographe et la présentation</h4>
+                            <ul class="space-y-2 text-sm text-gray-600">
+                                <li class="flex gap-2 items-start"><i class="ph-bold ph-check text-brand mt-1"></i> Relisez attentivement votre dossier pour éviter les fautes.</li>
+                                <li class="flex gap-2 items-start"><i class="ph-bold ph-check text-brand mt-1"></i> Faites relire vos textes par un professeur, un proche...</li>
+                                <li class="flex gap-2 items-start"><i class="ph-bold ph-check text-brand mt-1"></i> Soyez clairs, concis et bien structurés dans vos écrits.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-3xl p-8 mb-12 border border-gray-100">
+                        <h3 class="text-xl font-bold text-center mb-8">Mettre en valeur son dossier</h3>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            <div class="bg-white p-6 rounded-2xl shadow-sm">
+                                <span class="bg-blue-600 text-white w-6 h-6 inline-flex items-center justify-center rounded text-sm font-bold mb-3">1</span>
+                                <h4 class="font-bold text-dark mb-3">Compétences académiques et analytiques</h4>
+                                <ul class="space-y-3 text-sm text-gray-600">
+                                    <li><strong>✓ Esprit d'analyse et de synthèse</strong> → Capacité à comprendre des textes juridiques et à en extraire l'essentiel.</li>
+                                    <li><strong>✓ Rigueur et méthode</strong> → Faculté à structurer une argumentation de manière logique et précise.</li>
+                                    <li><strong>✓ Aptitude à la rédaction</strong> → Bonne maîtrise du français écrit et oral, essentielle pour les dissertations et commentaires d'arrêt.</li>
+                                    <li><strong>✓ Capacité de mémorisation</strong> → Le droit implique l'apprentissage de nombreux articles, jurisprudences et doctrines.</li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-white p-6 rounded-2xl shadow-sm">
+                                <span class="bg-blue-600 text-white w-6 h-6 inline-flex items-center justify-center rounded text-sm font-bold mb-3">2</span>
+                                <h4 class="font-bold text-dark mb-3">Compétences en argumentation et logique</h4>
+                                <ul class="space-y-3 text-sm text-gray-600">
+                                    <li><strong>✓ Goût pour l'argumentation et le débat</strong> → Indispensable pour défendre un point de vue en TD et, plus tard, dans une carrière juridique.</li>
+                                    <li><strong>✓ Capacité de raisonnement logique</strong> → Très utile pour résoudre des cas pratiques et comprendre les liens entre les règles de droit.</li>
+                                    <li><strong>✓ Esprit critique</strong> → Faculté d'examiner différentes interprétations d'un texte de loi ou d'une décision de justice.</li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-white p-6 rounded-2xl shadow-sm">
+                                <span class="bg-blue-600 text-white w-6 h-6 inline-flex items-center justify-center rounded text-sm font-bold mb-3">3</span>
+                                <h4 class="font-bold text-dark mb-3">Qualités personnelles et soft skills</h4>
+                                <ul class="space-y-3 text-sm text-gray-600">
+                                    <li><strong>✓ Autonomie et discipline</strong> → La licence de droit demande une organisation rigoureuse et beaucoup de travail personnel.</li>
+                                    <li><strong>✓ Curiosité intellectuelle</strong> → Intérêt pour l'actualité juridique, sociale et politique.</li>
+                                    <li><strong>✓ Goût pour la lecture</strong> → Une part importante du cursus repose sur la lecture de textes de loi, de doctrine et de jurisprudence.</li>
+                                    <li><strong>✓ Capacité d'adaptation et de persévérance</strong> → Savoir rebondir face aux difficultés et s'adapter à un rythme de travail soutenu.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-12">
+                        <h3 class="text-xl font-bold text-center mb-6"><span class="bg-blue-600 text-white w-6 h-6 inline-flex items-center justify-center rounded text-sm mr-2">4</span> Expériences et centres d'intérêt pertinents</h3>
+                        
+                        <div class="bg-white border border-gray-200 rounded-2xl p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div>
+                                <h4 class="font-bold text-dark flex items-center gap-2 mb-2"><i class="ph-fill ph-briefcase text-brand"></i> Expériences concrètes</h4>
+                                <p class="text-xs text-gray-500 mb-3">(stages, engagement associatif, projets scolaires)</p>
+                                <p class="font-bold text-sm text-gray-700 mb-2">➡ Exemples :</p>
+                                <ul class="list-none space-y-2 text-sm text-gray-600">
+                                    <li class="flex gap-2"><i class="ph-bold ph-check text-dark"></i> Participation à des concours d'éloquence ou à un club débat.</li>
+                                    <li class="flex gap-2"><i class="ph-bold ph-check text-dark"></i> Engagement dans une association juridique ou non, de défense des droits</li>
+                                    <li class="flex gap-2"><i class="ph-bold ph-check text-dark"></i> Stage dans un cabinet d'avocats, une mairie, un tribunal, une entreprise... (même d'observation).</li>
+                                    <li class="flex gap-2"><i class="ph-bold ph-check text-dark"></i> Participation à des simulations d'ONU, de procès fictifs ou de CVL...</li>
+                                </ul>
+                            </div>
+
+                            <div>
+                                <h4 class="font-bold text-dark flex items-center gap-2 mb-2"><i class="ph-fill ph-books text-brand"></i> Lectures et culture juridique</h4>
+                                <p class="text-xs text-gray-500 mb-3">&nbsp;</p> <p class="font-bold text-sm text-gray-700 mb-2">➡ Exemples :</p>
+                                <ul class="list-none space-y-2 text-sm text-gray-600">
+                                    <li class="flex gap-2"><i class="ph-bold ph-check text-dark"></i> Avoir lu des ouvrages ou suivi des conférences sur le droit.</li>
+                                    <li class="flex gap-2"><i class="ph-bold ph-check text-dark"></i> S'intéresser à des grandes décisions de justice ou à des affaires célèbres.</li>
+                                    <li class="flex gap-2"><i class="ph-bold ph-check text-dark"></i> Suivre l'actualité juridique et politique (Cour de cassation, Conseil d'Etat, Conseil constitutionnel, débats parlementaires).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center space-y-10">
+                        <div>
+                            <h4 class="font-bold text-lg underline mb-6">En résumé, le projet motivé doit refléter :</h4>
+                            <div class="inline-flex flex-col md:flex-row gap-4 justify-center">
+                                <span class="flex items-center gap-2 bg-green-50 text-green-800 px-4 py-2 rounded-lg text-sm font-bold border border-green-100"><i class="ph-fill ph-check-square text-green-600 text-xl"></i> Une réelle motivation pour le droit 📜</span>
+                                <span class="flex items-center gap-2 bg-green-50 text-green-800 px-4 py-2 rounded-lg text-sm font-bold border border-green-100"><i class="ph-fill ph-check-square text-green-600 text-xl"></i> Des compétences adaptées au cursus ⚖️</span>
+                                <span class="flex items-center gap-2 bg-green-50 text-green-800 px-4 py-2 rounded-lg text-sm font-bold border border-green-100"><i class="ph-fill ph-check-square text-green-600 text-xl"></i> Des expériences en lien avec la discipline 🔍</span>
+                            </div>
+                        </div>
+
+
+                        <div class="flex items-center justify-center gap-3 text-sm font-bold text-gray-700 bg-gray-50 inline-block px-6 py-3 rounded-full border border-gray-200">
+                            <span class="text-xl text-brand">??</span>
+                            <p>En cas de question ou d'interrogation, parlez en à votre Professeur(e) principal(e)</p>
+                            <span class="text-xl text-brand">??</span>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <section id="metiers" class="py-12">
+                <div class="text-center mb-10">
+                    <span class="font-hand text-brand text-3xl">Avenir</span>
+                    <h2 class="text-3xl lg:text-4xl font-extrabold text-dark mt-2">Quels débouchés avec le droit ?</h2>
+                    <p class="text-gray-500 mt-2 font-medium">Une formation, une multitude de carrières possibles.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    
+                    <div class="bg-white rounded-3xl p-6 lg:p-8 border border-gray-100 shadow-sm h-full">
+                        <div class="border-b-2 border-brand/20 pb-4 mb-6">
+                            <h3 class="text-xl font-black text-dark flex items-center gap-2 mb-1">
+                                <span class="bg-brand text-white w-8 h-8 rounded-lg flex items-center justify-center"><i class="ph-fill ph-briefcase"></i></span> 
+                                Les Métiers du Droit
+                            </h3>
+                            <p class="text-xs text-gray-500 italic font-medium ml-10">Accessible le plus souvent après Bac + 5 (Master 2) en poche.</p>
+                        </div>
+                        
+                        <div class="flex flex-wrap gap-2">
+                            <span class="job-tag">Avocat</span>
+                            <span class="job-tag">Magistrat</span>
+                            <span class="job-tag">Notaire</span>
+                            <span class="job-tag">Juriste d'entreprise</span>
+                            <span class="job-tag">Commissaire de justice</span>
+                            <span class="job-tag">Directeur juridique</span>
+                            <span class="job-tag">Procureur</span>
+                            <span class="job-tag">Greffier</span>
+                            <span class="job-tag">Mandataire judiciaire</span>
+                            <span class="job-tag">Clerc de notaire</span>
+                            <span class="job-tag">Officier de police</span>
+                            <span class="job-tag">Secrétaire juridique</span>
+                            <span class="job-tag">Inspecteur des finances publiques</span>
+                            <span class="job-tag">Administrateur judiciaire</span>
+                            <span class="job-tag">Commissaire de police</span>
+                            <span class="job-tag">Greffier en tribunal de commerce</span>
+                            <span class="job-tag">Inspecteur des douanes</span>
+                            <span class="job-tag">Officier de gendarmerie</span>
+                            <span class="job-tag">Directeur des services pénitentiaires</span>
+                            <span class="job-tag">Professeur</span>
+                            <span class="job-tag">Préfet</span>
+                            <span class="job-tag">Diplomate</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-3xl p-6 lg:p-8 border border-gray-100 shadow-sm h-full">
+                        <div class="border-b-2 border-brand/20 pb-4 mb-6">
+                            <h3 class="text-xl font-black text-dark flex items-center gap-2">
+                                <span class="bg-brand text-white w-8 h-8 rounded-lg flex items-center justify-center"><i class="ph-fill ph-books"></i></span> 
+                                Les Domaines
+                            </h3>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="bg-red-50 p-4 rounded-2xl border border-red-100 transition hover:shadow-sm">
+                                <strong class="text-red-700 text-sm block mb-2 flex items-center gap-2"><i class="ph-fill ph-scales"></i> Droit Privé</strong>
+                                <ul class="grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-1 text-xs text-gray-600 font-semibold list-disc pl-4">
+                                    <li>Droit des Affaires / Sociétés</li>
+                                    <li>Droit Pénal</li>
+                                    <li>Droit Bancaire et financier</li>
+                                    <li>Droit de la Propriété intellectuelle</li>
+                                    <li>Droit des Biens/Immobilier</li>
+                                    <li>Droit du Numérique</li>
+                                    <li>Droit du Travail/Social</li>
+                                    <li>Droit des Assurances</li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-sky-50 p-4 rounded-2xl border border-sky-100 transition hover:shadow-sm">
+                                <strong class="text-sky-700 text-sm block mb-2 flex items-center gap-2"><i class="ph-fill ph-bank"></i> Droit Public</strong>
+                                <ul class="grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-1 text-xs text-gray-600 font-semibold list-disc pl-4">
+                                    <li>Droit Administratif</li>
+                                    <li>Droit Constitutionnel</li>
+                                    <li>Droit Public des affaires</li>
+                                    <li>Droits fondamentaux</li>
+                                    <li>Droit des finances publiques</li>
+                                    <li>Droit Fiscal</li>
+                                    <li>Droit des collectivités territoriales</li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-blue-50 p-4 rounded-2xl border border-blue-100 transition hover:shadow-sm">
+                                <strong class="text-blue-700 text-sm block mb-2 flex items-center gap-2"><i class="ph-fill ph-globe-hemisphere-east"></i> International & Européen</strong>
+                                <ul class="space-y-1 text-xs text-gray-600 font-semibold list-disc pl-4">
+                                    <li>Droit du commerce international</li>
+                                    <li>Droit des organisations internationales</li>
+                                    <li>Droit Pénal international</li>
+                                    <li>Droit de l'Union Européenne</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-3xl p-6 text-center shadow-inner">
+                    <h3 class="font-bold text-dark text-lg mb-2 flex items-center justify-center gap-2">
+                        <i class="ph-fill ph-arrows-split text-brand text-2xl"></i> Et si je change d'avis ?
+                    </h3>
+                    <p class="text-sm text-gray-600 max-w-3xl mx-auto mb-4 leading-relaxed">
+                        Pas de panique ! La licence de droit est un diplôme permettant de bifurquer après vers d'autres domaines susceptibles de t'intéresser. Il existe également à Paris 1 des possibilités de réorientation au sein de l'Université.
+                    </p>
+                    <div class="flex flex-wrap justify-center gap-3">
+                        <span class="px-3 py-1 bg-white border border-gray-200 rounded-full text-xs font-bold text-gray-600 shadow-sm">Écoles de Commerce (via AST)</span>
+                        <span class="px-3 py-1 bg-white border border-gray-200 rounded-full text-xs font-bold text-gray-600 shadow-sm">Sciences politiques via IEP ou Fac</span>
+                        <span class="px-3 py-1 bg-white border border-gray-200 rounded-full text-xs font-bold text-gray-600 shadow-sm">Économie</span>
+                        <span class="px-3 py-1 bg-white border border-gray-200 rounded-full text-xs font-bold text-gray-600 shadow-sm">Gestion</span>
+                        <span class="px-3 py-1 bg-white border border-gray-200 rounded-full text-xs font-bold text-gray-600 shadow-sm">Journalisme</span>
+                        <span class="px-3 py-1 bg-white border border-gray-200 rounded-full text-xs font-bold text-gray-600 shadow-sm">Ressources Humaines</span>
+                        <span class="px-3 py-1 bg-white border border-gray-200 rounded-full text-xs font-bold text-gray-600 shadow-sm">Communication & Médias</span>
+                        <span class="px-3 py-1 bg-white border border-gray-200 rounded-full text-xs font-bold text-gray-600 shadow-sm">Culture & Patrimoine</span>
+                        <span class="px-3 py-1 bg-white border border-gray-200 rounded-full text-xs font-bold text-gray-600 shadow-sm">Fonction Publique Généraliste</span>
+                    </div>
+                </div>
+                
+                <style>
+                    .job-tag {
+                        display: inline-block;
+                        padding: 0.5rem 0.8rem;
+                        background-color: #f8fafc;
+                        border: 1px solid #e2e8f0;
+                        color: #334155;
+                        border-radius: 0.75rem;
+                        font-size: 0.75rem;
+                        font-weight: 700;
+                        cursor: default;
+                        transition: all 0.2s;
+                    }
+                    .job-tag:hover {
+                        background-color: #FFF7ED;
+                        border-color: #FF8533;
+                        color: #C2410C;
+                        transform: translateY(-2px);
+                    }
+                </style>
+            </section>
+
+<section id="lieux" class="py-12">
+                <div class="mb-10 text-center">
+                    <span class="font-hand text-brand text-3xl">Les Campus</span>
+                    <h2 class="text-3xl lg:text-4xl font-extrabold text-dark mt-2">Lieux d'enseignements ?</h2>
+                </div>
+
+                <div class="bg-white rounded-[2.5rem] p-4 lg:p-6 shadow-xl shadow-brand/5 border border-gray-100 flex justify-center">
+                    <img src="https://aseedsorbonne.com/public/images/capture-d-écran-2026-01-22-230743.png" 
+                         alt="Carte des lieux d'enseignement Paris 1" 
+                         class="w-full h-auto max-w-5xl object-contain rounded-2xl hover:scale-[1.01] transition duration-500">
+                </div>
+            </section>
+<section id="vie-etudiante" class="py-12 animate-fade-in">
+                
+                <div class="text-center max-w-4xl mx-auto mb-12">
+                    <span class="font-hand text-brand text-3xl">Vie étudiante</span>
+                    <h2 class="text-3xl lg:text-4xl font-extrabold text-dark mt-2 mb-6">Une vie étudiante riche</h2>
+                    <p class="text-gray-600 font-medium leading-relaxed text-lg">
+                        Réussir sa licence, c'est aussi savoir décompresser et s'ouvrir aux autres. <br>
+                        À Paris 1, tu as accès à une offre sportive, associative et culturelle immense pour enrichir ton parcours.
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-6 lg:gap-8">
+                    
+                    <div class="bg-white rounded-[2rem] p-6 lg:p-8 border border-gray-100 shadow-sm relative overflow-hidden group hover:-translate-y-1 transition duration-300">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-purple-50 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
+                        
+                        <div class="w-14 h-14 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center text-3xl mb-6 relative z-10">
+                            <i class="ph-fill ph-users-three"></i>
+                        </div>
+                        
+                        <h3 class="text-xl font-bold text-dark mb-3">Vie Associative</h3>
+                        <p class="text-sm text-gray-600 leading-relaxed mb-6">
+                            C'est le cœur battant de la fac ! Associations d'Eloquence, de débat, de simulation ONU, et pleins d'autres associations thématiques. Sans oublier l'AsEED Sorbonne! C'est le meilleur moyen de se faire des amis et de construire son réseau. L'investissement dans la vie associative universitaire peut également te rapporter un bonus sur ta moyenne (jusqu'à 0,5 pts).
+                        </p>
+
+                        <div class="pt-4 border-t border-gray-100">
+                            <span class="inline-flex items-center gap-2 text-xs font-bold text-purple-700 bg-purple-50 px-3 py-2 rounded-lg">
+                                <i class="ph-bold ph-heart"></i> +100 Assos à Paris 1
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-[2rem] p-6 lg:p-8 border border-gray-100 shadow-sm relative overflow-hidden group hover:-translate-y-1 transition duration-300">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-orange-50 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
+                        
+                        <div class="w-14 h-14 bg-orange-100 text-brand rounded-2xl flex items-center justify-center text-3xl mb-6 relative z-10">
+                            <i class="ph-fill ph-sneaker-move"></i>
+                        </div>
+                        
+                        <h3 class="text-xl font-bold text-dark mb-3">Sport (UEFAPS)</h3>
+                        <p class="text-sm text-gray-600 leading-relaxed mb-6">
+                            L'UEFAPS te permet de pratiquer plus de 50 activités (Boxe, Danse, Football, Yoga, Natation...) avec des profs qualifiés. Idéal pour évacuer le stress des cours et rencontrer des étudiants de toute l'université !
+                        </p>
+
+                        <div class="pt-4 border-t border-gray-100">
+                            <span class="inline-flex items-center gap-2 text-xs font-bold text-brand-600 bg-brand-50 px-3 py-2 rounded-lg">
+                                <i class="ph-bold ph-trophy"></i> Rapporte des points bonus*
+                            </span>
+                            <p class="text-[9px] text-gray-400 mt-1 italic">*Jusqu'à +0.5 points sur ta moyenne au S2 de la L1 au M1</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-[2rem] p-6 lg:p-8 border border-gray-100 shadow-sm relative overflow-hidden group hover:-translate-y-1 transition duration-300">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
+                        
+                        <div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-3xl mb-6 relative z-10">
+                            <i class="ph-fill ph-translate"></i>
+                        </div>
+                        
+                        <h3 class="text-xl font-bold text-dark mb-3">Langues & International</h3>
+                        <p class="text-sm text-gray-600 leading-relaxed mb-6">
+                            L'anglais juridique est obligatoire, mais tu peux aussi continuer une LV2 ou découvrir une nouvelle langue (Arabe, Russe, Chinois...) grâce au département des langues.
+                        </p>
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+<section id="contact-final" class="py-12 animate-fade-in mb-20">
+                
+                <div class="bg-gradient-to-br from-brand-50 to-white rounded-[2.5rem] p-8 lg:p-12 border border-brand/10 shadow-xl text-center relative overflow-hidden">
+                    
+                    <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-brand to-orange-400"></div>
+                    <div class="absolute -bottom-20 -right-20 w-64 h-64 bg-brand/5 rounded-full blur-3xl pointer-events-none"></div>
+
+                    <div class="max-w-2xl mx-auto mb-10 relative z-10">
+                        <span class="font-hand text-brand text-4xl mb-4 block transform -rotate-2">À très vite !</span>
+                        <h2 class="text-2xl lg:text-3xl font-extrabold text-dark mb-6 leading-tight">
+                            On a hâte de te retrouver dès l'année prochaine sur les bancs de Paris 1 !
+                        </h2>
+                        <p class="text-gray-600 font-medium text-lg leading-relaxed">
+                            En attendant, n'hésite pas à nous suivre sur Instagram ! <br>
+                            C'est le meilleur endroit pour voir la vie de l'asso en direct. Si tu as la moindre question, nos DM sont ouverts, on pourra y répondre ! 💌
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10 transform rotate-1 hover:rotate-0 transition duration-500">
+                        <div class="rounded-2xl overflow-hidden shadow-md border-4 border-white transform hover:-translate-y-2 transition duration-300">
+                            <img src="https://aseedsorbonne.com/public/images/img_5793.jpeg" alt="L'équipe AsEED" class="w-full h-40 object-cover hover:scale-110 transition duration-500">
+                        </div>
+                        <div class="rounded-2xl overflow-hidden shadow-md border-4 border-white transform md:translate-y-4 hover:translate-y-0 transition duration-300">
+                            <img src="https://aseedsorbonne.com/public/images/img_2658.jpeg" alt="L'équipe AsEED" class="w-full h-40 object-cover hover:scale-110 transition duration-500">
+                        </div>
+                        <div class="rounded-2xl overflow-hidden shadow-md border-4 border-white transform hover:-translate-y-2 transition duration-300">
+                            <img src="https://aseedsorbonne.com/public/images/img_3383.jpeg" alt="L'équipe AsEED" class="w-full h-40 object-cover hover:scale-110 transition duration-500">
+                        </div>
+                        <div class="rounded-2xl overflow-hidden shadow-md border-4 border-white transform md:translate-y-4 hover:translate-y-0 transition duration-300">
+                            <img src="https://aseedsorbonne.com/public/images/95bdbfb02071cebc61e0d4e5751b8c3b.jpeg" alt="L'équipe AsEED" class="w-full h-40 object-cover hover:scale-110 transition duration-500">
+                        </div>
+                    </div>
+
+                    <div class="relative z-10">
+                        <a href="https://www.instagram.com/aseedsorbonne/" target="_blank" class="inline-flex items-center gap-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-full font-bold text-lg shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition transform">
+                            <i class="ph-bold ph-instagram-logo text-2xl"></i>
+                            Nous rejoindre sur Insta
+                        </a>
+                        <p class="text-xs text-gray-400 mt-4 italic">@aseedsorbonne</p>
+                    </div>
+
+                </div>
+            </section>
+        </main>
+
+        <aside class="hidden lg:block w-1/4 relative print:hidden">
+            <div class="sticky top-32 pl-6 border-l-2 border-gray-100 py-2">
+                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6 block">Sommaire</span>
+                <nav class="flex flex-col space-y-1">
+                    <a href="#bienvenue" class="toc-link block py-2 pl-4 text-sm font-medium text-gray-500 hover:text-brand transition rounded-r-lg border-l-2 border-transparent -ml-[26px]">Bienvenue</a>
+                    <a href="#universite" class="toc-link block py-2 pl-4 text-sm font-medium text-gray-500 hover:text-brand transition rounded-r-lg border-l-2 border-transparent -ml-[26px]">L'Université Paris 1 Panthéon - Sorbonne</a>
+                    <a href="#chiffres" class="toc-link block py-2 pl-4 text-sm font-medium text-gray-500 hover:text-brand transition rounded-r-lg border-l-2 border-transparent -ml-[26px]">Chiffres Clés</a>
+                    <a href="#programme" class="toc-link block py-2 pl-4 text-sm font-medium text-gray-500 hover:text-brand transition rounded-r-lg border-l-2 border-transparent -ml-[26px]">Programme de la Licence</a>
+                    <a href="#organisation" class="toc-link block py-2 pl-4 text-sm font-medium text-gray-500 hover:text-brand transition rounded-r-lg border-l-2 border-transparent -ml-[26px]">Organisation des cours</a>
+                    <a href="#parcoursup" class="toc-link block py-2 pl-4 text-sm font-medium text-gray-500 hover:text-brand transition rounded-r-lg border-l-2 border-transparent -ml-[26px]">Conseils Parcoursup</a>
+                    <a href="#metiers" class="toc-link block py-2 pl-4 text-sm font-medium text-gray-500 hover:text-brand transition rounded-r-lg border-l-2 border-transparent -ml-[26px]">Débouchés</a>
+                    <a href="#lieux" class="toc-link block py-2 pl-4 text-sm font-medium text-gray-500 hover:text-brand transition rounded-r-lg border-l-2 border-transparent -ml-[26px]">Les Campus</a>
+                    <a href="#vie-etudiante" class="toc-link block py-2 pl-4 text-sm font-medium text-gray-500 hover:text-brand transition rounded-r-lg border-l-2 border-transparent -ml-[26px]">Vie étudiante</a>
+
+                </nav>
+            </div>
+        </aside>
+
+    </div>
+
+    <script>
+        // --- Tabs ---
+        function switchTab(tabId) {
+            document.getElementById('tab-l1').classList.add('hidden');
+            document.getElementById('tab-l2').classList.add('hidden');
+            document.getElementById('tab-l3').classList.add('hidden');
+            document.querySelectorAll('button[id^="tab-btn-"]').forEach(btn => {
+                btn.classList.remove('bg-dark', 'text-white');
+                btn.classList.add('text-gray-500', 'hover:bg-gray-50');
+            });
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            document.getElementById('tab-btn-' + tabId).classList.add('bg-dark', 'text-white');
+        }
+
+        // --- Mobile Menu ---
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const links = document.querySelectorAll('.mobile-link');
+        let isMenuOpen = false;
+
+        menuBtn.addEventListener('click', () => {
+            isMenuOpen = !isMenuOpen;
+            if(isMenuOpen) {
+                mobileMenu.classList.remove('translate-x-full');
+                menuBtn.innerHTML = '<i class="ph-bold ph-x text-2xl"></i>';
+            } else {
+                mobileMenu.classList.add('translate-x-full');
+                menuBtn.innerHTML = '<i class="ph-bold ph-list text-2xl"></i>';
+            }
+        });
+
+        links.forEach(link => {
+            link.addEventListener('click', () => {
+                isMenuOpen = false;
+                mobileMenu.classList.add('translate-x-full');
+                menuBtn.innerHTML = '<i class="ph-bold ph-list text-2xl"></i>';
+            });
+        });
+
+        // --- Scroll Spy ---
+        const sections = document.querySelectorAll('section');
+        const tocLinks = document.querySelectorAll('.toc-link');
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                if (scrollY >= section.offsetTop - 250) current = section.getAttribute('id');
+            });
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) link.classList.add('active');
+            });
+        });
+
+        // --- MAP SCRIPT (Leaflet) ---
+        // 1. Init
+        const map = L.map('map', {
+            center: [48.8566, 2.3522],
+            zoom: 10,
+            scrollWheelZoom: false,
+            zoomControl: false
+        });
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+        // 2. Tiles (Voyager)
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            subdomains: 'abcd',
+            maxZoom: 19
+        }).addTo(map);
+
+        // 3. Data
+        const universities = [
+            { name: "Paris 1 Panthéon-Sorbonne", lat: 48.8463, lng: 2.3461, type: "main" },
+            { name: "Panthéon-Assas (Centre Assas)", lat: 48.8436, lng: 2.3335, type: "other" },
+            { name: "Dauphine | PSL", lat: 48.8676, lng: 2.2720, type: "other" },
+            { name: "Paris Cité (Malakoff)", lat: 48.8244, lng: 2.3023, type: "other" },
+            { name: "Paris Nanterre", lat: 48.9049, lng: 2.2090, type: "other" },
+            { name: "Paris-Saclay (Sceaux)", lat: 48.7816, lng: 2.2848, type: "other" },
+            { name: "Paris 8 (Saint-Denis)", lat: 48.9449, lng: 2.3643, type: "other" },
+            { name: "Sorbonne Paris Nord (Villetaneuse)", lat: 48.9599, lng: 2.3449, type: "other" },
+            { name: "UPEC (Créteil)", lat: 48.7938, lng: 2.4467, type: "other" },
+            { name: "CY Cergy Paris Université", lat: 49.0382, lng: 2.0745, type: "other" },
+            { name: "UVSQ (Guyancourt)", lat: 48.7800, lng: 2.0450, type: "other" },
+            { name: "Université d'Évry", lat: 48.6245, lng: 2.4277, type: "other" }
+        ];
+
+        // 4. Markers & Legend
+        const legendContainer = document.getElementById('legend-list');
+
+        universities.forEach(uni => {
+            const isMain = uni.type === 'main';
+            const iconSize = isMain ? 20 : 12;
+            const customIcon = L.divIcon({
+                className: 'custom-pin',
+                html: '',
+                iconSize: [iconSize, iconSize],
+                bgPos: [0, 0]
+            });
+
+            const marker = L.marker([uni.lat, uni.lng], { icon: customIcon }).addTo(map);
+            marker.bindPopup(`<b style="font-family: Inter; color: #0f172a;">${uni.name}</b>`);
+
+            if (!isMain) {
+                marker.getElement().style.backgroundColor = '#94a3b8'; // Gris pour les autres
+                marker.getElement().style.borderColor = 'white';
+
+                const item = document.createElement('div');
+                item.className = "flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition";
+                item.innerHTML = `<span class="w-2 h-2 rounded-full bg-slate-400 shrink-0"></span><span class="text-sm text-gray-600 font-medium">${uni.name}</span>`;
+                item.addEventListener('click', () => {
+                    map.flyTo([uni.lat, uni.lng], 14);
+                    marker.openPopup();
+                });
+                legendContainer.appendChild(item);
+            } else {
+                marker.getElement().style.backgroundColor = '#FF8533'; // Orange pour Paris 1
+                marker.setZIndexOffset(1000);
+                
+                // Ajout manuel de Paris 1 en haut de liste
+                const item = document.createElement('div');
+                item.className = "flex items-center gap-3 p-3 rounded-xl bg-brand-50 border border-brand-100 mb-2 cursor-pointer";
+                item.innerHTML = `<span class="w-3 h-3 rounded-full bg-brand shrink-0"></span><div><strong class="block text-sm text-dark">${uni.name}</strong><span class="text-xs text-brand">Ton objectif !</span></div>`;
+                item.addEventListener('click', () => {
+                    map.flyTo([uni.lat, uni.lng], 14);
+                    marker.openPopup();
+                });
+                legendContainer.prepend(item);
+            }
+        });
+    </script>
+</body>
+</html>
