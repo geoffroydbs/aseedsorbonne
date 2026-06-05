@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AsEED Sorbonne - Association des Étudiants de l'École de Droit de la Sorbonne</title>
-
+    <title>AsEED Sorbonne - L'association des étudiant·es en Droit</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap" rel="stylesheet">
@@ -18,18 +18,18 @@
                 extend: {
                     colors: {
                         brand: { DEFAULT: '#FF8533', 50: '#FFF8F2', 100: '#FFEDD5', 200: '#FED7AA', 400: '#FF9F66', 600: '#EA580C', 700: '#C2410C' },
-                        dark: '#020617',     
-                        surface: '#0f172a',  
-                        surface_light: '#1e293b'
+                        /* Tons sombres beaucoup plus chauds (Stone) au lieu du bleu froid */
+                        dark: '#1c1917',     
+                        surface: '#292524',  
+                        surface_light: '#44403c'
                     },
                     fontFamily: { sans: ['Inter', 'sans-serif'], hand: ['Caveat', 'cursive'] },
                     boxShadow: { 
-                        'soft': '0 10px 30px -10px rgba(0,0,0,0.5)',
-                        'glow': '0 0 20px rgba(255, 133, 51, 0.15)',
-                        'glow-hover': '0 0 30px rgba(255, 133, 51, 0.3)'
+                        'soft': '0 10px 40px -10px rgba(0,0,0,0.7)',
+                        'glow': '0 0 30px rgba(255, 133, 51, 0.1)',
                     },
                     animation: { 
-                        'fade-in': 'fadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'fade-in': 'fadeIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards',
                         'blob': 'blob 15s infinite alternate'
                     },
                     keyframes: {
@@ -44,39 +44,35 @@
         }
     </script>
     <style>
-        body { background-color: #020617; color: #f8fafc; }
-        .dark-nav { background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 133, 51, 0.15); }
-        .dark-card { background: #0f172a; border: 1px solid #1e293b; }
-        .fade-in-up { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        body { background-color: #1c1917; color: #fafaf9; }
+        .dark-nav { background: rgba(28, 25, 23, 0.90); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255, 133, 51, 0.1); }
+        .dark-card { background: #292524; border: 1px solid #44403c; }
+        .fade-in-up { opacity: 0; transform: translateY(40px); transition: all 1s cubic-bezier(0.16, 1, 0.3, 1); }
         .fade-in-up.visible { opacity: 1; transform: translateY(0); }
         .text-magma { background: linear-gradient(to right, #FF8533 0%, #FBBF24 50%, #FF8533 100%); background-size: 200% auto; color: transparent; -webkit-background-clip: text; background-clip: text; }
-        .bg-grid {
-            background-size: 40px 40px;
-            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                              linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-        }
     </style>
 </head>
-<body class="antialiased selection:bg-brand selection:text-white bg-grid relative">
+<body class="antialiased selection:bg-brand selection:text-white relative">
 
-    <!-- Blobs d'ambiance sombres -->
-    <div class="fixed top-0 left-0 w-[500px] h-[500px] bg-brand-600/10 rounded-full blur-[120px] pointer-events-none animate-blob"></div>
-    <div class="fixed bottom-0 right-0 w-[500px] h-[500px] bg-yellow-600/10 rounded-full blur-[120px] pointer-events-none animate-blob" style="animation-delay: -5s"></div>
+    <!-- Lumières chaudes en arrière-plan (plus douces) -->
+    <div class="fixed top-0 left-1/4 w-[600px] h-[600px] bg-brand-600/10 rounded-full blur-[150px] pointer-events-none animate-blob"></div>
+    <div class="fixed bottom-0 right-1/4 w-[600px] h-[600px] bg-yellow-600/5 rounded-full blur-[150px] pointer-events-none animate-blob" style="animation-delay: -5s"></div>
 
-    <!-- NAVIGATION -->
+    <!-- NAVIGATION (Logo agrandi) -->
     <nav class="fixed w-full z-50 dark-nav h-24 flex items-center transition-all duration-300">
         <div class="max-w-7xl w-full mx-auto px-6 flex justify-between items-center">
             
             <a href="#accueil" class="flex items-center gap-4 group shrink-0">
-                <img src="https://aseedsorbonne.com/logo.png" alt="Logo AsEED" class="h-12 w-auto object-contain transition duration-300 group-hover:scale-105">
+                <!-- Logo beaucoup plus grand (h-16 à h-20) -->
+                <img src="https://aseedsorbonne.com/logo.png" alt="Logo AsEED" class="h-16 md:h-20 w-auto object-contain transition duration-300 group-hover:scale-105">
                 <div class="leading-tight hidden xs:block">
-                    <span class="block font-black text-lg md:text-xl tracking-tight text-white">AsEED</span>
-                    <span class="block text-[10px] font-bold text-brand uppercase tracking-[0.2em]">Sorbonne</span>
+                    <span class="block font-black text-xl md:text-2xl tracking-tight text-white">AsEED</span>
+                    <span class="block text-[11px] font-bold text-brand uppercase tracking-[0.2em]">Sorbonne</span>
                 </div>
             </a>
 
             <!-- MENU DESKTOP -->
-            <div class="hidden lg:flex items-center gap-8 text-sm font-bold text-slate-300 tracking-wide">
+            <div class="hidden lg:flex items-center gap-8 text-base font-medium text-stone-300 tracking-wide">
                 <a href="#accueil" class="hover:text-white transition-colors">Accueil</a>
                 <a href="#orientation" class="hover:text-white transition-colors">Orientation</a>
                 <a href="#missions" class="hover:text-white transition-colors">Nos Missions</a>
@@ -85,10 +81,10 @@
 
             <!-- RÉSEAUX & BURGER MENU -->
             <div class="flex items-center gap-3">
-                <a href="https://instagram.com/aseedsorbonne" target="_blank" class="hidden md:flex w-10 h-10 rounded-xl bg-surface items-center justify-center text-slate-300 hover:bg-brand hover:text-white transition-colors border border-surface_light"><i class="ph-bold ph-instagram-logo text-xl"></i></a>
-                <a href="https://www.linkedin.com/in/aseedsorbonne/" target="_blank" class="hidden md:flex w-10 h-10 rounded-xl bg-surface items-center justify-center text-slate-300 hover:bg-[#0077b5] hover:text-white transition-colors border border-surface_light"><i class="ph-bold ph-linkedin-logo text-xl"></i></a>
+                <a href="https://instagram.com/aseedsorbonne" target="_blank" class="hidden md:flex w-12 h-12 rounded-xl bg-surface items-center justify-center text-stone-300 hover:bg-brand hover:text-white transition-colors border border-surface_light shadow-sm"><i class="ph-bold ph-instagram-logo text-2xl"></i></a>
+                <a href="https://www.linkedin.com/in/aseedsorbonne/" target="_blank" class="hidden md:flex w-12 h-12 rounded-xl bg-surface items-center justify-center text-stone-300 hover:bg-[#0077b5] hover:text-white transition-colors border border-surface_light shadow-sm"><i class="ph-bold ph-linkedin-logo text-2xl"></i></a>
                 
-                <button id="mobile-menu-open" class="lg:hidden w-11 h-11 flex items-center justify-center bg-surface text-brand rounded-xl text-2xl border border-surface_light"><i class="ph-bold ph-list"></i></button>
+                <button id="mobile-menu-open" class="lg:hidden w-12 h-12 flex items-center justify-center bg-surface text-brand rounded-xl text-3xl border border-surface_light"><i class="ph-bold ph-list"></i></button>
             </div>
         </div>
     </nav>
@@ -99,18 +95,18 @@
         <div id="mobile-menu-panel" class="absolute top-0 right-0 w-[80%] max-w-sm h-full bg-dark shadow-soft translate-x-full transition-transform duration-300 flex flex-col border-l border-surface_light">
             <div class="p-6 flex justify-between items-center border-b border-surface_light">
                 <span class="font-black text-xl text-white">Menu</span>
-                <button id="mobile-menu-close" class="w-10 h-10 flex items-center justify-center bg-surface text-slate-400 hover:text-white rounded-xl text-xl transition-colors"><i class="ph-bold ph-x"></i></button>
+                <button id="mobile-menu-close" class="w-10 h-10 flex items-center justify-center bg-surface text-stone-400 hover:text-white rounded-xl text-xl transition-colors"><i class="ph-bold ph-x"></i></button>
             </div>
             <div class="p-8 flex flex-col gap-8 overflow-y-auto font-bold text-xl">
-                <a href="#accueil" class="menu-link text-slate-300 hover:text-white flex items-center gap-4 transition-colors"><i class="ph-bold ph-house text-brand"></i> Accueil</a>
-                <a href="#orientation" class="menu-link text-slate-300 hover:text-white flex items-center gap-4 transition-colors"><i class="ph-bold ph-student text-brand"></i> Orientation</a>
-                <a href="#missions" class="menu-link text-slate-300 hover:text-white flex items-center gap-4 transition-colors"><i class="ph-bold ph-star text-brand"></i> Nos Missions</a>
-                <a href="#contact" class="menu-link text-slate-300 hover:text-white flex items-center gap-4 transition-colors"><i class="ph-bold ph-envelope text-brand"></i> Contact</a>
+                <a href="#accueil" class="menu-link text-stone-300 hover:text-white flex items-center gap-4 transition-colors"><i class="ph-bold ph-house text-brand"></i> Accueil</a>
+                <a href="#orientation" class="menu-link text-stone-300 hover:text-white flex items-center gap-4 transition-colors"><i class="ph-bold ph-student text-brand"></i> Orientation</a>
+                <a href="#missions" class="menu-link text-stone-300 hover:text-white flex items-center gap-4 transition-colors"><i class="ph-bold ph-star text-brand"></i> Nos Missions</a>
+                <a href="#contact" class="menu-link text-stone-300 hover:text-white flex items-center gap-4 transition-colors"><i class="ph-bold ph-envelope text-brand"></i> Contact</a>
             </div>
             <div class="mt-auto p-6 bg-surface flex flex-col gap-4 border-t border-surface_light">
                 <div class="flex justify-center gap-4">
-                    <a href="https://instagram.com/aseedsorbonne" target="_blank" class="w-14 h-14 bg-dark border border-surface_light rounded-xl flex items-center justify-center text-slate-300 hover:text-brand transition-colors"><i class="ph-bold ph-instagram-logo text-2xl"></i></a>
-                    <a href="https://www.linkedin.com/in/aseedsorbonne/" target="_blank" class="w-14 h-14 bg-dark border border-surface_light rounded-xl flex items-center justify-center text-slate-300 hover:text-[#0077b5] transition-colors"><i class="ph-bold ph-linkedin-logo text-2xl"></i></a>
+                    <a href="https://instagram.com/aseedsorbonne" target="_blank" class="w-14 h-14 bg-dark border border-surface_light rounded-xl flex items-center justify-center text-stone-300 hover:text-brand transition-colors"><i class="ph-bold ph-instagram-logo text-2xl"></i></a>
+                    <a href="https://www.linkedin.com/in/aseedsorbonne/" target="_blank" class="w-14 h-14 bg-dark border border-surface_light rounded-xl flex items-center justify-center text-stone-300 hover:text-[#0077b5] transition-colors"><i class="ph-bold ph-linkedin-logo text-2xl"></i></a>
                 </div>
             </div>
         </div>
@@ -129,62 +125,43 @@
         <div class="w-full max-w-5xl mx-auto text-center relative z-10 animate-fade-in flex flex-col items-center">
             
             <!-- BANNIÈRE ADMIN -->
-            <div id="alert-banner-container" class="w-full max-w-3xl mx-auto mb-10">
-                <div class="bg-gradient-to-r from-brand-600 to-brand-400 p-[1px] rounded-2xl shadow-glow">
-                    <div class="bg-dark rounded-[15px] px-6 py-4 flex items-center justify-center text-center">
-                        <span class="font-bold text-white flex items-center gap-3">
-                            <span class="flex h-3 w-3 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-brand"></span></span>
-                            <span id="banner-text">Parcoursup, MonMaster : Accepté à Paris 1 ? Bienvenue !</span>
-                        </span>
-                    </div>
+            <div id="alert-banner-container" class="hidden w-full max-w-2xl mx-auto mb-10">
+                <div class="dark-card rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-center text-center gap-4 shadow-soft">
+                    <span class="font-medium text-stone-200 flex items-center gap-3">
+                        <i class="ph-fill ph-megaphone text-brand text-xl"></i>
+                        <span id="banner-text">Parcoursup, MonMaster : Accepté à Paris 1 ? Bienvenue !</span>
+                    </span>
+                    <a id="banner-link" href="#" class="hidden px-5 py-2 bg-brand/10 text-brand border border-brand/20 text-sm font-bold rounded-xl hover:bg-brand hover:text-white transition-colors whitespace-nowrap">Voir</a>
                 </div>
             </div>
             
-            <h1 class="text-6xl md:text-9xl font-black tracking-tighter leading-none text-white mb-6">
+            <span class="font-hand text-4xl md:text-5xl text-brand rotate-[-3deg] inline-block mb-6 drop-shadow-sm font-bold">À vos côtés</span>
+
+            <h1 class="text-6xl md:text-9xl font-black tracking-tighter leading-none text-white mb-8">
                 AsEED <span class="text-magma block mt-2 md:inline md:mt-0">Sorbonne</span>
             </h1>
             
-            <p class="text-2xl md:text-3xl text-slate-300 font-bold tracking-tight mb-8">
-                Depuis 2010, aux côtés des étudiant.es en Droit de Paris 1!
+            <p class="text-2xl md:text-3xl text-stone-200 font-bold tracking-tight mb-8">
+                L'association de filière des étudiant·es en droit de Paris 1 depuis 2010.
             </p>
             
-            <p class="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed font-medium mb-12">
-                De votre rentrée en Licence jusqu'à votre Master, nous sommes engagés à vos côtés pour vous représenter, vous orienter et animer la vie étudiante.
+            <p class="text-lg md:text-xl text-stone-400 max-w-2xl mx-auto leading-relaxed font-medium mb-12">
+                De votre rentrée en Licence jusqu'à votre Master, nous sommes engagés pour vous représenter, vous orienter et faire vivre votre campus.
             </p>
             
             <div class="flex flex-wrap items-center justify-center gap-4 w-full sm:w-auto">
-                <a href="#orientation" class="w-full sm:w-auto px-8 py-4 bg-brand text-white rounded-xl font-bold hover:bg-brand-600 transition-colors shadow-glow hover:shadow-glow-hover text-sm uppercase tracking-wider flex items-center justify-center gap-2">Futur·e étudiant·e <i class="ph-bold ph-arrow-down"></i></a>
-            </div>
-        </div>
-
-        <!-- Chiffres clés -->
-        <div class="w-full max-w-5xl mx-auto mt-20 relative z-10 grid grid-cols-2 md:grid-cols-4 gap-4 animate-fade-in" style="animation-delay: 200ms;">
-            <div class="dark-card rounded-2xl p-6 text-center shadow-soft">
-                <span class="block text-4xl font-black text-brand mb-1">2010</span>
-                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Création</span>
-            </div>
-            <div class="dark-card rounded-2xl p-6 text-center shadow-soft">
-                <span class="block text-4xl font-black text-brand mb-1">100%</span>
-                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Indépendants</span>
-            </div>
-            <div class="dark-card rounded-2xl p-6 text-center shadow-soft">
-                <span class="block text-4xl font-black text-brand mb-1">25+</span>
-                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Élus en conseils</span>
-            </div>
-            <div class="dark-card rounded-2xl p-6 text-center shadow-soft">
-                <span class="block text-4xl font-black text-brand mb-1">3000+</span>
-                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Étudiants aidés</span>
+                <a href="#orientation" class="w-full sm:w-auto px-8 py-4 bg-brand text-white rounded-2xl font-bold hover:bg-brand-600 transition-colors shadow-glow text-base uppercase tracking-wider flex items-center justify-center gap-2">Futur·e étudiant·e <i class="ph-bold ph-arrow-down"></i></a>
             </div>
         </div>
     </section>
 
     <!-- 2. BLOC ORIENTATION (FUTURS ÉTUDIANTS) -->
-    <section id="orientation" class="py-24 px-6 relative z-20">
+    <section id="orientation" class="py-24 px-6 relative z-20 bg-surface border-y border-surface_light">
         <div class="max-w-6xl mx-auto">
             <div class="text-center mb-16 fade-in-up">
                 <span class="font-hand text-brand text-4xl rotate-[-2deg] inline-block mb-3">Félicitations !</span>
                 <h2 class="text-4xl md:text-5xl font-black text-white tracking-tight mb-4">Futur·e étudiant·e ?</h2>
-                <p class="text-slate-400 text-lg max-w-2xl mx-auto leading-relaxed">
+                <p class="text-stone-400 text-lg max-w-2xl mx-auto leading-relaxed">
                     Que vous fassiez vos premiers pas à la fac ou que vous poursuiviez en Master, l'AsEED est à vos côtés pour vous accompagner vers la réussite.
                 </p>
             </div>
@@ -194,41 +171,34 @@
                 <div class="group dark-card rounded-[2.5rem] p-10 md:p-12 hover:border-brand transition-colors duration-500 shadow-soft fade-in-up flex flex-col relative overflow-hidden">
                     <div class="flex justify-between items-start mb-8 relative z-10">
                         <div class="bg-surface_light w-16 h-16 rounded-2xl flex items-center justify-center text-3xl text-brand group-hover:bg-brand group-hover:text-white transition-colors duration-500"><i class="ph-fill ph-student"></i></div>
-                        <span class="bg-surface_light border border-surface_light px-4 py-1.5 rounded-full text-xs font-bold text-slate-300">L1 - L3</span>
+                        <span class="bg-surface_light border border-surface_light px-4 py-1.5 rounded-full text-xs font-bold text-stone-300">L1 - L3</span>
                     </div>
                     <h3 class="text-3xl font-black text-white mb-4 relative z-10">Entrer en Licence</h3>
-                    <p class="text-slate-400 text-base leading-relaxed mb-8 flex-grow relative z-10">Parcoursup, intégration, organisation des cours... Plonge dans notre guide interactif dédié pour réussir ton arrivée et tes premières années à la Sorbonne, ou rejoins la communauté dès maintenant.</p>
+                    <p class="text-stone-400 text-base leading-relaxed mb-10 flex-grow relative z-10">Parcoursup, intégration, organisation des cours... Plonge dans notre guide interactif dédié pour réussir ton arrivée à la Sorbonne, ou rejoins la communauté de ta promo dès maintenant !</p>
                     
                     <div class="mt-auto flex flex-col xl:flex-row gap-4 relative z-10">
                         <a href="https://jpo.aseedsorbonne.com" target="_blank" class="w-full text-center font-bold text-white bg-brand px-6 py-4 rounded-xl hover:bg-brand-600 transition-colors uppercase tracking-wider text-xs shadow-glow">
                             Voir le guide <i class="ph-bold ph-arrow-right"></i>
                         </a>
-                        <a href="https://linktr.ee/aseedsorbonne" target="_blank" class="w-full text-center font-bold text-white border border-surface_light bg-surface hover:bg-surface_light px-6 py-4 rounded-xl transition-colors uppercase tracking-wider text-xs">
+                        <a href="https://linktr.ee/aseedsorbonne" target="_blank" class="w-full text-center font-bold text-white border border-surface_light bg-surface_light hover:bg-stone-600 px-6 py-4 rounded-xl transition-colors uppercase tracking-wider text-xs flex items-center justify-center gap-2">
                             Groupes de promo <i class="ph-bold ph-users"></i>
                         </a>
                     </div>
                 </div>
                 
                 <!-- Carte Master -->
-                <div class="group dark-card rounded-[2.5rem] p-10 md:p-12 shadow-soft fade-in-up flex flex-col relative overflow-hidden border-dashed" style="transition-delay: 100ms;">
-                    
-                    <div class="absolute inset-0 bg-dark/60 backdrop-blur-[1px] z-20 flex items-center justify-center rounded-[2.5rem]">
-                        <span class="bg-surface border border-surface_light text-white px-6 py-3 rounded-xl font-bold uppercase tracking-widest text-sm shadow-xl flex items-center gap-2">
-                            <i class="ph-bold ph-hourglass-high text-brand animate-pulse"></i> Prochainement
-                        </span>
-                    </div>
-
-                    <div class="relative z-10 opacity-50">
+                <div class="group dark-card rounded-[2.5rem] p-10 md:p-12 shadow-soft fade-in-up flex flex-col relative overflow-hidden" style="transition-delay: 100ms;">
+                    <div class="relative z-10 opacity-70">
                         <div class="flex justify-between items-start mb-8">
-                            <div class="bg-surface_light w-16 h-16 rounded-2xl flex items-center justify-center text-3xl text-slate-500"><i class="ph-fill ph-graduation-cap"></i></div>
-                            <span class="bg-surface_light px-4 py-1.5 rounded-full text-xs font-bold text-slate-500">M1 - M2</span>
+                            <div class="bg-surface_light w-16 h-16 rounded-2xl flex items-center justify-center text-3xl text-stone-500"><i class="ph-fill ph-graduation-cap"></i></div>
+                            <span class="bg-surface_light px-4 py-1.5 rounded-full text-xs font-bold text-stone-400">M1 - M2</span>
                         </div>
                         <h3 class="text-3xl font-black text-white mb-4">Candidater en Master</h3>
-                        <p class="text-slate-400 text-base leading-relaxed mb-8 flex-grow">Sélection, lettres de motivation, CV... Nous t'accompagnerons très bientôt avec un guide complet pour décrocher le Master de tes rêves.</p>
+                        <p class="text-stone-400 text-base leading-relaxed mb-10 flex-grow">Sélection, lettres de motivation, CV... Nous t'accompagnerons très bientôt avec un guide complet pour décrocher le Master de tes rêves.</p>
                         
-                        <div class="mt-auto">
-                            <span class="inline-flex items-center gap-2 font-bold text-slate-500 text-sm uppercase tracking-wider bg-surface_light px-6 py-3 rounded-xl">
-                                En construction
+                        <div class="mt-auto flex gap-4">
+                            <span class="w-full inline-flex items-center justify-center gap-2 font-bold text-stone-400 text-xs uppercase tracking-wider bg-surface_light px-6 py-4 rounded-xl cursor-not-allowed">
+                                <i class="ph-bold ph-hourglass-high"></i> Prochainement
                             </span>
                         </div>
                     </div>
@@ -238,7 +208,7 @@
     </section>
 
     <!-- 3. BLOC NOS MISSIONS -->
-    <section id="missions" class="py-24 px-6 relative z-10 bg-surface border-y border-surface_light">
+    <section id="missions" class="py-24 px-6 relative z-10">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16 fade-in-up">
                 <span class="text-brand font-bold uppercase tracking-widest text-sm mb-2 block">Notre ADN</span>
@@ -248,50 +218,50 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <!-- Représentation -->
                 <div class="dark-card rounded-[2rem] p-8 shadow-soft hover:border-brand transition-colors duration-300 fade-in-up">
-                    <div class="w-14 h-14 bg-surface_light text-brand rounded-xl flex items-center justify-center text-3xl mb-6"><i class="ph-fill ph-gavel"></i></div>
+                    <div class="w-16 h-16 bg-surface_light text-brand rounded-2xl flex items-center justify-center text-3xl mb-8"><i class="ph-fill ph-gavel"></i></div>
                     <h3 class="text-xl font-bold text-white mb-3">Représentation</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">Nous représentons en conseils, les étudiant.es de manière indépendante et apartisane.</p>
+                    <p class="text-stone-400 text-sm leading-relaxed">Nous représentons en conseils, les étudiant·es de manière indépendante et apartisane pour défendre vos droits.</p>
                 </div>
 
                 <!-- Vie Étudiante -->
-                <div class="dark-card rounded-[2rem] p-8 shadow-soft hover:border-brand transition-colors duration-300 fade-in-up" style="transition-delay: 100ms;">
-                    <div class="w-14 h-14 bg-surface_light text-blue-400 rounded-xl flex items-center justify-center text-3xl mb-6"><i class="ph-fill ph-confetti"></i></div>
+                <div class="dark-card rounded-[2rem] p-8 shadow-soft hover:border-blue-500 transition-colors duration-300 fade-in-up" style="transition-delay: 100ms;">
+                    <div class="w-16 h-16 bg-surface_light text-blue-500 rounded-2xl flex items-center justify-center text-3xl mb-8"><i class="ph-fill ph-confetti"></i></div>
                     <h3 class="text-xl font-bold text-white mb-3">Vie Étudiante</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">Soirées, Week-End d'Intégration, Ski Sorbonne, nous animons la vie étudiante de Paris 1!</p>
+                    <p class="text-stone-400 text-sm leading-relaxed">Soirées, Week-End d'Intégration, Ski Sorbonne... nous animons la vie étudiante de Paris 1 !</p>
                 </div>
 
-                <!-- Culture -->
-                <div class="dark-card rounded-[2rem] p-8 shadow-soft hover:border-brand transition-colors duration-300 fade-in-up" style="transition-delay: 200ms;">
-                    <div class="w-14 h-14 bg-surface_light text-purple-400 rounded-xl flex items-center justify-center text-3xl mb-6"><i class="ph-fill ph-masks-theater"></i></div>
+                <!-- Culture (Icône corrigée en ph-palette) -->
+                <div class="dark-card rounded-[2rem] p-8 shadow-soft hover:border-purple-500 transition-colors duration-300 fade-in-up" style="transition-delay: 200ms;">
+                    <div class="w-16 h-16 bg-surface_light text-purple-500 rounded-2xl flex items-center justify-center text-3xl mb-8"><i class="ph-fill ph-palette"></i></div>
                     <h3 class="text-xl font-bold text-white mb-3">Culture & Sorties</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">Sorties juridiques, Sorties culturelles, Conférences, Actualité juridique.</p>
+                    <p class="text-stone-400 text-sm leading-relaxed">Sorties juridiques, sorties culturelles, conférences, et décryptage de l'actualité juridique.</p>
                 </div>
 
                 <!-- Orientation -->
-                <div class="dark-card rounded-[2rem] p-8 shadow-soft hover:border-brand transition-colors duration-300 fade-in-up" style="transition-delay: 300ms;">
-                    <div class="w-14 h-14 bg-surface_light text-emerald-400 rounded-xl flex items-center justify-center text-3xl mb-6"><i class="ph-fill ph-compass"></i></div>
-                    <h3 class="text-xl font-bold text-white mb-3">Orientation et promotion des filières juridiques</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">Rencontres avec des professionnels, Brunch des Masters, Ateliers CV et LM.</p>
+                <div class="dark-card rounded-[2rem] p-8 shadow-soft hover:border-emerald-500 transition-colors duration-300 fade-in-up" style="transition-delay: 300ms;">
+                    <div class="w-16 h-16 bg-surface_light text-emerald-500 rounded-2xl flex items-center justify-center text-3xl mb-8"><i class="ph-fill ph-compass"></i></div>
+                    <h3 class="text-xl font-bold text-white mb-3">Avenir & Pro</h3>
+                    <p class="text-stone-400 text-sm leading-relaxed">Rencontres avec des professionnels, Brunch des Masters, ateliers de perfectionnement CV et Lettre de Motivation.</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- 4. BLOC RÉSEAUX / REJOINDRE -->
-    <section class="py-24 px-6 fade-in-up">
-        <div class="max-w-6xl mx-auto">
+    <section class="py-24 px-6 fade-in-up bg-surface border-t border-surface_light">
+        <div class="max-w-5xl mx-auto">
             <div class="dark-card rounded-[3rem] p-12 md:p-20 text-center shadow-soft relative overflow-hidden flex flex-col justify-center items-center">
                 <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-brand-600/10 rounded-full filter blur-[100px] pointer-events-none"></div>
                 
                 <span class="font-hand text-brand text-4xl md:text-5xl rotate-[-2deg] inline-block mb-4 relative z-10">Rejoignez l'aventure</span>
                 <h2 class="text-4xl md:text-5xl font-black text-white mb-6 tracking-tight relative z-10">Suivez notre actualité</h2>
-                <p class="text-slate-400 text-lg mb-12 max-w-2xl mx-auto leading-relaxed relative z-10">Ne manquez aucune information importante, aucun événement et aucune opportunité en nous suivant sur nos réseaux.</p>
+                <p class="text-stone-400 text-lg mb-12 max-w-2xl mx-auto leading-relaxed relative z-10">Ne manquez aucune information importante, aucun événement et aucune opportunité en nous suivant sur nos réseaux.</p>
                 
                 <div class="flex flex-col sm:flex-row justify-center items-center gap-5 w-full sm:w-auto relative z-10">
-                    <a href="https://instagram.com/aseedsorbonne" target="_blank" class="w-full sm:w-auto px-10 py-5 bg-surface border border-surface_light text-white rounded-xl font-bold hover:bg-brand hover:border-brand transition-colors shadow-soft flex items-center justify-center gap-3 text-lg">
+                    <a href="https://instagram.com/aseedsorbonne" target="_blank" class="w-full sm:w-auto px-10 py-5 bg-surface_light border border-surface_light text-white rounded-2xl font-bold hover:bg-brand hover:border-brand transition-colors shadow-soft flex items-center justify-center gap-3 text-lg">
                         <i class="ph-bold ph-instagram-logo text-2xl"></i> Instagram
                     </a>
-                    <a href="https://www.linkedin.com/in/aseedsorbonne/" target="_blank" class="w-full sm:w-auto px-10 py-5 bg-surface border border-surface_light text-white rounded-xl font-bold hover:bg-[#0077b5] hover:border-[#0077b5] transition-colors shadow-soft flex items-center justify-center gap-3 text-lg">
+                    <a href="https://www.linkedin.com/in/aseedsorbonne/" target="_blank" class="w-full sm:w-auto px-10 py-5 bg-surface_light border border-surface_light text-white rounded-2xl font-bold hover:bg-[#0077b5] hover:border-[#0077b5] transition-colors shadow-soft flex items-center justify-center gap-3 text-lg">
                         <i class="ph-bold ph-linkedin-logo text-2xl"></i> LinkedIn
                     </a>
                 </div>
@@ -300,40 +270,40 @@
     </section>
 
     <!-- 5. BLOC CONTACT -->
-    <section id="contact" class="pb-24 px-6 fade-in-up">
+    <section id="contact" class="py-24 px-6 fade-in-up">
         <div class="max-w-4xl mx-auto">
-            <div class="bg-surface rounded-[3rem] p-12 md:p-16 text-center shadow-soft border border-surface_light flex flex-col justify-center items-center">
-                <div class="w-20 h-20 bg-dark text-brand rounded-2xl flex items-center justify-center text-4xl mb-6 shadow-soft border border-surface_light">
+            <div class="dark-card rounded-[3rem] p-12 md:p-16 text-center shadow-soft flex flex-col justify-center items-center border border-surface_light">
+                <div class="w-24 h-24 bg-surface text-brand rounded-3xl flex items-center justify-center text-5xl mb-8 shadow-soft border border-surface_light">
                     <i class="ph-fill ph-paper-plane-tilt"></i>
                 </div>
-                <h2 class="text-3xl md:text-4xl font-black text-white mb-4 tracking-tight">Une question ?</h2>
-                <p class="text-slate-400 text-lg mb-10 leading-relaxed max-w-lg">
-                    Un problème de scolarité, une envie de devenir membre ou juste besoin d'une info ? L'équipe est à votre écoute.
+                <h2 class="text-3xl md:text-5xl font-black text-white mb-6 tracking-tight">Une question ?</h2>
+                <p class="text-stone-400 text-lg mb-10 leading-relaxed max-w-xl">
+                    Un problème de scolarité, une envie de devenir membre ou juste besoin d'une info ? L'équipe est à votre entière écoute.
                 </p>
                 
-                <a href="mailto:contact@aseedsorbonne.com" class="inline-flex items-center justify-center gap-3 px-8 py-4 bg-brand text-white rounded-xl font-bold hover:bg-brand-600 transition-colors shadow-glow text-lg w-full sm:w-auto">
-                    <i class="ph-bold ph-envelope-simple text-xl"></i> contact@aseedsorbonne.com
+                <a href="mailto:contact@aseedsorbonne.com" class="inline-flex items-center justify-center gap-3 px-8 py-5 bg-brand text-white rounded-2xl font-bold hover:bg-brand-600 transition-colors shadow-glow text-lg w-full sm:w-auto">
+                    <i class="ph-bold ph-envelope-simple text-2xl"></i> contact@aseedsorbonne.com
                 </a>
             </div>
         </div>
     </section>
 
     <!-- FOOTER -->
-    <footer class="dark-card border-t border-surface_light pt-16 pb-8">
+    <footer class="bg-surface border-t border-surface_light pt-16 pb-8">
         <div class="max-w-7xl mx-auto px-6">
             <div class="flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
-                <div class="flex items-center gap-3">
-                    <img src="https://aseedsorbonne.com/logo.png" alt="Logo AsEED" class="h-10 w-auto">
-                    <span class="font-extrabold text-xl text-white tracking-tight">AsEED Sorbonne</span>
+                <div class="flex items-center gap-4">
+                    <img src="https://aseedsorbonne.com/logo.png" alt="Logo AsEED" class="h-16 w-auto">
+                    <span class="font-extrabold text-2xl text-white tracking-tight">AsEED Sorbonne</span>
                 </div>
                 
                 <div class="flex items-center gap-4">
-                    <a href="https://instagram.com/aseedsorbonne" target="_blank" class="w-12 h-12 rounded-xl bg-surface flex items-center justify-center text-slate-400 hover:bg-brand hover:text-white border border-surface_light transition-colors"><i class="ph-bold ph-instagram-logo text-xl"></i></a>
-                    <a href="https://www.linkedin.com/in/aseedsorbonne/" target="_blank" class="w-12 h-12 rounded-xl bg-surface flex items-center justify-center text-slate-400 hover:bg-[#0077b5] hover:text-white border border-surface_light transition-colors"><i class="ph-bold ph-linkedin-logo text-xl"></i></a>
+                    <a href="https://instagram.com/aseedsorbonne" target="_blank" class="w-12 h-12 rounded-xl bg-surface_light flex items-center justify-center text-stone-300 hover:bg-brand hover:text-white transition-colors"><i class="ph-bold ph-instagram-logo text-xl"></i></a>
+                    <a href="https://www.linkedin.com/in/aseedsorbonne/" target="_blank" class="w-12 h-12 rounded-xl bg-surface_light flex items-center justify-center text-stone-300 hover:bg-[#0077b5] hover:text-white transition-colors"><i class="ph-bold ph-linkedin-logo text-xl"></i></a>
                 </div>
             </div>
             
-            <div class="text-center text-slate-500 text-sm font-medium border-t border-surface_light pt-8 flex flex-col gap-2">
+            <div class="text-center text-stone-500 text-sm font-medium border-t border-surface_light pt-8 flex flex-col gap-2">
                 <p>L'association de filière des étudiant·es en droit de Paris 1 depuis 2010.</p>
                 <p>© 2026 AsEED Sorbonne - Tous droits réservés.</p>
             </div>
@@ -356,10 +326,29 @@
         fetch('content/data.json')
             .then(r => r.ok ? r.json() : null)
             .then(data => {
+                const bannerContainer = document.getElementById('alert-banner-container');
+                
+                // Si le CMS a configuré une bannière active, on remplace le contenu.
+                // Sinon, la bannière par défaut définie dans le HTML (Parcoursup...) s'affiche.
                 if (data && data.announcement && data.announcement.active) {
                     document.getElementById('banner-text').innerText = data.announcement.text;
+                    
+                    const btn = document.getElementById('banner-link');
+                    if (data.announcement.link) {
+                        btn.href = data.announcement.link;
+                        btn.innerText = data.announcement.link_text || 'Voir';
+                        btn.classList.remove('hidden');
+                        btn.classList.add('inline-flex');
+                    }
                 }
-            }).catch(e => console.log("Bannière par défaut conservée."));
+                
+                // On affiche la bannière dans tous les cas (soit celle du CMS, soit celle par défaut)
+                bannerContainer.classList.remove('hidden');
+                
+            }).catch(e => {
+                // En cas d'erreur de chargement (CMS non configuré), on affiche la bannière par défaut
+                document.getElementById('alert-banner-container').classList.remove('hidden');
+            });
     </script>
 </body>
 </html>
