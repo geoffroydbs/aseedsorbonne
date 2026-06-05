@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maintenance - AsEED Sorbonne</title>
-    
+    <title>AsEED Sorbonne - Association des Étudiants de l'École de Droit de la Sorbonne</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap" rel="stylesheet">
     
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -16,176 +17,349 @@
             theme: {
                 extend: {
                     colors: {
-                        brand: { DEFAULT: '#FF8533', 600: '#FF6B00', 50: '#FFF8F2' },
-                        dark: '#0f172a',
+                        brand: { DEFAULT: '#FF8533', 50: '#FFF8F2', 100: '#FFEDD5', 200: '#FED7AA', 400: '#FF9F66', 600: '#EA580C', 700: '#C2410C' },
+                        dark: '#020617',     
+                        surface: '#0f172a',  
+                        surface_light: '#1e293b'
                     },
-                    fontFamily: { 
-                        sans: ['Inter', 'sans-serif'],
-                        head: ['Outfit', 'sans-serif']
+                    fontFamily: { sans: ['Inter', 'sans-serif'], hand: ['Caveat', 'cursive'] },
+                    boxShadow: { 
+                        'soft': '0 10px 30px -10px rgba(0,0,0,0.5)',
+                        'glow': '0 0 20px rgba(255, 133, 51, 0.15)',
+                        'glow-hover': '0 0 30px rgba(255, 133, 51, 0.3)'
+                    },
+                    animation: { 
+                        'fade-in': 'fadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'blob': 'blob 15s infinite alternate'
+                    },
+                    keyframes: {
+                        fadeIn: { '0%': { opacity: '0', transform: 'translateY(20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '100%': { transform: 'translate(20px, -30px) scale(1.05)' }
+                        }
                     }
                 }
             }
         }
     </script>
-
     <style>
-        body {
-            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Sorbonne_fr.jpg/2560px-Sorbonne_fr.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-        }
-        .overlay {
-            background: linear-gradient(to bottom, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.98) 100%);
+        body { background-color: #020617; color: #f8fafc; }
+        .dark-nav { background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 133, 51, 0.15); }
+        .dark-card { background: #0f172a; border: 1px solid #1e293b; }
+        .fade-in-up { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .fade-in-up.visible { opacity: 1; transform: translateY(0); }
+        .text-magma { background: linear-gradient(to right, #FF8533 0%, #FBBF24 50%, #FF8533 100%); background-size: 200% auto; color: transparent; -webkit-background-clip: text; background-clip: text; }
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
         }
     </style>
 </head>
-<body class="min-h-screen w-full flex flex-col items-center justify-center text-dark antialiased py-10">
+<body class="antialiased selection:bg-brand selection:text-white bg-grid relative">
 
-    <div class="fixed inset-0 overlay"></div>
+    <!-- Blobs d'ambiance sombres -->
+    <div class="fixed top-0 left-0 w-[500px] h-[500px] bg-brand-600/10 rounded-full blur-[120px] pointer-events-none animate-blob"></div>
+    <div class="fixed bottom-0 right-0 w-[500px] h-[500px] bg-yellow-600/10 rounded-full blur-[120px] pointer-events-none animate-blob" style="animation-delay: -5s"></div>
 
-    <div class="relative z-10 max-w-3xl w-full px-6 text-center">
-        
-        <div class="mx-auto mb-8">
-            <img src="logo.png" 
-                 alt="Logo AsEED Sorbonne" 
-                 class="h-40 md:h-56 w-auto mx-auto object-contain drop-shadow-2xl transition-transform duration-500 hover:scale-105"
-                 onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex'">
+    <!-- NAVIGATION -->
+    <nav class="fixed w-full z-50 dark-nav h-24 flex items-center transition-all duration-300">
+        <div class="max-w-7xl w-full mx-auto px-6 flex justify-between items-center">
             
-            <div id="logo-fallback" class="hidden w-40 h-40 bg-brand text-white rounded-3xl items-center justify-center text-6xl font-bold font-head shadow-xl mx-auto">A</div>
-        </div>
-
-        <div id="status-pill" class="hidden mb-8 fade-in-up visible">
-            <a id="status-link" href="#" class="inline-flex items-center gap-3 px-5 py-2.5 bg-white/90 backdrop-blur border border-gray-200 rounded-full shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300 group">
-                <span class="relative flex h-3 w-3">
-                  <span id="status-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></span>
-                  <span id="status-dot" class="relative inline-flex rounded-full h-3 w-3 bg-brand"></span>
-                </span>
-                <span id="status-message" class="text-sm font-bold text-gray-700 font-head group-hover:text-dark transition">Chargement...</span>
-                <i id="status-arrow" class="ph-bold ph-arrow-right text-gray-400 text-xs hidden group-hover:text-brand"></i>
+            <a href="#accueil" class="flex items-center gap-4 group shrink-0">
+                <img src="https://aseedsorbonne.com/logo.png" alt="Logo AsEED" class="h-12 w-auto object-contain transition duration-300 group-hover:scale-105">
+                <div class="leading-tight hidden xs:block">
+                    <span class="block font-black text-lg md:text-xl tracking-tight text-white">AsEED</span>
+                    <span class="block text-[10px] font-bold text-brand uppercase tracking-[0.2em]">Sorbonne</span>
+                </div>
             </a>
+
+            <!-- MENU DESKTOP -->
+            <div class="hidden lg:flex items-center gap-8 text-sm font-bold text-slate-300 tracking-wide">
+                <a href="#accueil" class="hover:text-white transition-colors">Accueil</a>
+                <a href="#orientation" class="hover:text-white transition-colors">Orientation</a>
+                <a href="#missions" class="hover:text-white transition-colors">Nos Missions</a>
+                <a href="#contact" class="hover:text-white transition-colors">Contact</a>
+            </div>
+
+            <!-- RÉSEAUX & BURGER MENU -->
+            <div class="flex items-center gap-3">
+                <a href="https://instagram.com/aseedsorbonne" target="_blank" class="hidden md:flex w-10 h-10 rounded-xl bg-surface items-center justify-center text-slate-300 hover:bg-brand hover:text-white transition-colors border border-surface_light"><i class="ph-bold ph-instagram-logo text-xl"></i></a>
+                <a href="https://www.linkedin.com/in/aseedsorbonne/" target="_blank" class="hidden md:flex w-10 h-10 rounded-xl bg-surface items-center justify-center text-slate-300 hover:bg-[#0077b5] hover:text-white transition-colors border border-surface_light"><i class="ph-bold ph-linkedin-logo text-xl"></i></a>
+                
+                <button id="mobile-menu-open" class="lg:hidden w-11 h-11 flex items-center justify-center bg-surface text-brand rounded-xl text-2xl border border-surface_light"><i class="ph-bold ph-list"></i></button>
+            </div>
         </div>
+    </nav>
 
-        <h1 id="hero-title" class="text-4xl md:text-6xl font-extrabold font-head text-gray-900 mb-4 tracking-tight">
-            Site en travaux <span class="text-brand">🚧</span>
-        </h1>
-        
-        <p id="hero-subtext" class="text-lg text-gray-500 font-medium mb-12 leading-relaxed max-w-xl mx-auto whitespace-pre-line">
-            L'AsEED Sorbonne prépare une nouvelle plateforme.<br>En attendant, retrouvez l'essentiel ici :
-        </p>
-
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 w-full mb-12">
-            <a id="btn-annales" href="#" target="_blank" class="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 bg-dark text-white rounded-xl font-bold hover:bg-gray-800 transition shadow-lg hover:-translate-y-1 transform duration-200 group text-lg">
-                <i class="ph-bold ph-files text-2xl group-hover:text-brand transition"></i>
-                <span>Accéder aux Annales</span>
-            </a>
-            <a id="btn-insta" href="#" target="_blank" class="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 bg-white border border-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-50 transition hover:border-brand/30 hover:text-brand shadow-sm hover:-translate-y-1 transform duration-200 text-lg">
-                <i class="ph-bold ph-instagram-logo text-2xl"></i>
-                <span>Suivre @aseedsorbonne</span>
-            </a>
-        </div>
-
-        <div id="events-wrapper" class="hidden text-left bg-white/60 backdrop-blur-sm rounded-3xl border border-gray-200 p-8 shadow-sm max-w-2xl mx-auto w-full">
-            <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-6 flex items-center gap-2 border-b border-gray-200 pb-2">
-                <i class="ph-fill ph-calendar-check text-brand"></i> À venir prochainement
-            </h3>
-            <div id="events-container" class="space-y-4"></div>
-        </div>
-
-        <div class="mt-16 pt-8 border-t border-gray-200/60 w-full max-w-xl mx-auto">
-            <p class="text-sm text-gray-400 font-medium">Contact : <a href="mailto:contact@aseedsorbonne.com" class="text-brand hover:underline">contact@aseedsorbonne.com</a></p>
+    <!-- MENU MOBILE -->
+    <div id="mobile-menu" class="fixed inset-0 z-[60] invisible overflow-hidden transition-all duration-300">
+        <div id="mobile-menu-backdrop" class="absolute inset-0 bg-black/80 opacity-0 transition-opacity duration-300"></div>
+        <div id="mobile-menu-panel" class="absolute top-0 right-0 w-[80%] max-w-sm h-full bg-dark shadow-soft translate-x-full transition-transform duration-300 flex flex-col border-l border-surface_light">
+            <div class="p-6 flex justify-between items-center border-b border-surface_light">
+                <span class="font-black text-xl text-white">Menu</span>
+                <button id="mobile-menu-close" class="w-10 h-10 flex items-center justify-center bg-surface text-slate-400 hover:text-white rounded-xl text-xl transition-colors"><i class="ph-bold ph-x"></i></button>
+            </div>
+            <div class="p-8 flex flex-col gap-8 overflow-y-auto font-bold text-xl">
+                <a href="#accueil" class="menu-link text-slate-300 hover:text-white flex items-center gap-4 transition-colors"><i class="ph-bold ph-house text-brand"></i> Accueil</a>
+                <a href="#orientation" class="menu-link text-slate-300 hover:text-white flex items-center gap-4 transition-colors"><i class="ph-bold ph-student text-brand"></i> Orientation</a>
+                <a href="#missions" class="menu-link text-slate-300 hover:text-white flex items-center gap-4 transition-colors"><i class="ph-bold ph-star text-brand"></i> Nos Missions</a>
+                <a href="#contact" class="menu-link text-slate-300 hover:text-white flex items-center gap-4 transition-colors"><i class="ph-bold ph-envelope text-brand"></i> Contact</a>
+            </div>
+            <div class="mt-auto p-6 bg-surface flex flex-col gap-4 border-t border-surface_light">
+                <div class="flex justify-center gap-4">
+                    <a href="https://instagram.com/aseedsorbonne" target="_blank" class="w-14 h-14 bg-dark border border-surface_light rounded-xl flex items-center justify-center text-slate-300 hover:text-brand transition-colors"><i class="ph-bold ph-instagram-logo text-2xl"></i></a>
+                    <a href="https://www.linkedin.com/in/aseedsorbonne/" target="_blank" class="w-14 h-14 bg-dark border border-surface_light rounded-xl flex items-center justify-center text-slate-300 hover:text-[#0077b5] transition-colors"><i class="ph-bold ph-linkedin-logo text-2xl"></i></a>
+                </div>
+            </div>
         </div>
     </div>
-
     <script>
-        // -- 1. LOGIQUE DU BADGE (COULEURS) --
-        fetch('content/alert.json')
-            .then(r => r.json())
-            .then(alert => {
-                if(alert.show_alert) {
-                    const pill = document.getElementById('status-pill');
-                    const link = document.getElementById('status-link');
-                    const msg = document.getElementById('status-message');
-                    const dot = document.getElementById('status-dot');
-                    const ping = document.getElementById('status-ping');
-                    const arrow = document.getElementById('status-arrow');
-                    
-                    // COULEURS DU POINT
-                    let colorClass = 'bg-brand'; // Orange par défaut
-                    if(alert.type) {
-                        if(alert.type.includes("Vert")) colorClass = 'bg-emerald-500';
-                        if(alert.type.includes("Rouge")) colorClass = 'bg-red-500';
-                        if(alert.type.includes("Bleu")) colorClass = 'bg-blue-500';
-                        if(alert.type.includes("Gris")) colorClass = 'bg-gray-400';
-                    }
+        const openBtn = document.getElementById('mobile-menu-open'); const closeBtn = document.getElementById('mobile-menu-close'); const menu = document.getElementById('mobile-menu'); const panel = document.getElementById('mobile-menu-panel'); const backdrop = document.getElementById('mobile-menu-backdrop'); const menuLinks = document.querySelectorAll('.menu-link');
+        function openMenu() { menu.classList.remove('invisible'); setTimeout(() => { backdrop.classList.add('opacity-100'); panel.classList.remove('translate-x-full'); }, 10); }
+        function closeMenu() { backdrop.classList.remove('opacity-100'); panel.classList.add('translate-x-full'); setTimeout(() => { menu.classList.add('invisible'); }, 300); }
+        if(openBtn) openBtn.addEventListener('click', openMenu); if(closeBtn) closeBtn.addEventListener('click', closeMenu); if(backdrop) backdrop.addEventListener('click', closeMenu);
+        menuLinks.forEach(link => link.addEventListener('click', closeMenu));
+    </script>
 
-                    dot.className = `relative inline-flex rounded-full h-3 w-3 ${colorClass}`;
-                    ping.className = `animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${colorClass}`;
-
-                    msg.innerText = alert.message;
-                    
-                    if(alert.link) {
-                        link.href = alert.link;
-                        link.target = "_blank";
-                        arrow.classList.remove('hidden');
-                        link.classList.add('cursor-pointer', 'hover:border-brand/50');
-                    } else {
-                        link.removeAttribute('href');
-                        link.classList.add('cursor-default');
-                    }
-                    pill.classList.remove('hidden');
-                }
-            })
-            .catch(() => console.log("Pas de badge actif."));
-
-        // -- 2. LOGIQUE TEXTES ET BOUTONS --
-        fetch('content/settings.json')
-            .then(r => r.json())
-            .then(settings => {
-                if(settings.headline) document.getElementById('hero-title').innerHTML = settings.headline;
-                if(settings.subtext) document.getElementById('hero-subtext').innerText = settings.subtext;
-                if(settings.annales_url) document.getElementById('btn-annales').href = settings.annales_url;
-                if(settings.insta_url) document.getElementById('btn-insta').href = settings.insta_url;
-            })
-            .catch(() => console.log("Textes par défaut utilisés."));
-
-        // -- 3. LOGIQUE AGENDA --
-        const categoryIcons = { "Vie Étudiante": "ph-confetti", "Culture": "ph-masks-theater", "Orientation": "ph-compass", "Pédagogie": "ph-student", "Partenariat": "ph-handshake" };
+    <!-- 1. BLOC IDENTITÉ (HERO) -->
+    <section id="accueil" class="relative pt-32 pb-20 px-6 min-h-[90vh] flex flex-col items-center justify-center overflow-hidden">
         
-        fetch('content/data.json')
-            .then(r => r.json())
-            .then(data => {
-                const container = document.getElementById('events-container');
-                const wrapper = document.getElementById('events-wrapper');
+        <div class="w-full max-w-5xl mx-auto text-center relative z-10 animate-fade-in flex flex-col items-center">
+            
+            <!-- BANNIÈRE ADMIN -->
+            <div id="alert-banner-container" class="w-full max-w-3xl mx-auto mb-10">
+                <div class="bg-gradient-to-r from-brand-600 to-brand-400 p-[1px] rounded-2xl shadow-glow">
+                    <div class="bg-dark rounded-[15px] px-6 py-4 flex items-center justify-center text-center">
+                        <span class="font-bold text-white flex items-center gap-3">
+                            <span class="flex h-3 w-3 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-brand"></span></span>
+                            <span id="banner-text">Parcoursup, MonMaster : Accepté à Paris 1 ? Bienvenue !</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <h1 class="text-6xl md:text-9xl font-black tracking-tighter leading-none text-white mb-6">
+                AsEED <span class="text-magma block mt-2 md:inline md:mt-0">Sorbonne</span>
+            </h1>
+            
+            <p class="text-2xl md:text-3xl text-slate-300 font-bold tracking-tight mb-8">
+                Depuis 2010, aux côtés des étudiant.es en Droit de Paris 1!
+            </p>
+            
+            <p class="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed font-medium mb-12">
+                De votre rentrée en Licence jusqu'à votre Master, nous sommes engagés à vos côtés pour vous représenter, vous orienter et animer la vie étudiante.
+            </p>
+            
+            <div class="flex flex-wrap items-center justify-center gap-4 w-full sm:w-auto">
+                <a href="#orientation" class="w-full sm:w-auto px-8 py-4 bg-brand text-white rounded-xl font-bold hover:bg-brand-600 transition-colors shadow-glow hover:shadow-glow-hover text-sm uppercase tracking-wider flex items-center justify-center gap-2">Futur·e étudiant·e <i class="ph-bold ph-arrow-down"></i></a>
+            </div>
+        </div>
 
-                if(data.events && data.events.length > 0) {
-                    wrapper.classList.remove('hidden');
-                    container.innerHTML = data.events.map(event => {
-                        const iconClass = categoryIcons[event.category] || "ph-calendar-blank";
-                        const tag = event.url ? 'a' : 'div';
-                        const href = event.url ? `href="${event.url}" target="_blank"` : '';
-                        const hoverClass = event.url ? 'hover:border-brand cursor-pointer hover:shadow-md' : 'cursor-default border-gray-100';
-                        const linkIcon = event.url ? '<i class="ph-bold ph-arrow-up-right text-gray-400 group-hover:text-brand"></i>' : '';
+        <!-- Chiffres clés -->
+        <div class="w-full max-w-5xl mx-auto mt-20 relative z-10 grid grid-cols-2 md:grid-cols-4 gap-4 animate-fade-in" style="animation-delay: 200ms;">
+            <div class="dark-card rounded-2xl p-6 text-center shadow-soft">
+                <span class="block text-4xl font-black text-brand mb-1">2010</span>
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Création</span>
+            </div>
+            <div class="dark-card rounded-2xl p-6 text-center shadow-soft">
+                <span class="block text-4xl font-black text-brand mb-1">100%</span>
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Indépendants</span>
+            </div>
+            <div class="dark-card rounded-2xl p-6 text-center shadow-soft">
+                <span class="block text-4xl font-black text-brand mb-1">25+</span>
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Élus en conseils</span>
+            </div>
+            <div class="dark-card rounded-2xl p-6 text-center shadow-soft">
+                <span class="block text-4xl font-black text-brand mb-1">3000+</span>
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Étudiants aidés</span>
+            </div>
+        </div>
+    </section>
 
-                        return `
-                        <${tag} ${href} class="block bg-white p-5 rounded-2xl border ${hoverClass} flex items-center gap-5 transition shadow-sm group relative">
-                            <div class="flex-shrink-0 w-16 h-16 bg-brand-50 rounded-2xl flex flex-col items-center justify-center text-brand border border-brand/10">
-                                <span class="text-xs font-bold uppercase leading-none">${event.month}</span><span class="text-xl font-extrabold leading-none mt-1">${event.day}</span>
-                            </div>
-                            <div class="flex-grow text-left">
-                                <span class="inline-flex items-center gap-1.5 text-[10px] font-bold text-gray-500 uppercase tracking-wide bg-gray-50 px-2.5 py-1 rounded-full border border-gray-100 mb-1">
-                                    <i class="ph-fill ${iconClass} text-brand text-xs"></i> ${event.category}
-                                </span>
-                                <div class="flex justify-between items-start gap-2">
-                                    <div><h4 class="font-bold text-gray-900 text-base mt-1 group-hover:text-brand transition">${event.title}</h4><p class="text-sm text-gray-500 mt-0.5 flex items-center gap-1"><i class="ph-fill ph-map-pin"></i> ${event.location}</p></div>
-                                    ${linkIcon}
-                                </div>
-                            </div>
-                        </${tag}>`;
-                    }).join('');
+    <!-- 2. BLOC ORIENTATION (FUTURS ÉTUDIANTS) -->
+    <section id="orientation" class="py-24 px-6 relative z-20">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16 fade-in-up">
+                <span class="font-hand text-brand text-4xl rotate-[-2deg] inline-block mb-3">Félicitations !</span>
+                <h2 class="text-4xl md:text-5xl font-black text-white tracking-tight mb-4">Futur·e étudiant·e ?</h2>
+                <p class="text-slate-400 text-lg max-w-2xl mx-auto leading-relaxed">
+                    Que vous fassiez vos premiers pas à la fac ou que vous poursuiviez en Master, l'AsEED est à vos côtés pour vous accompagner vers la réussite.
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Carte Licence -->
+                <div class="group dark-card rounded-[2.5rem] p-10 md:p-12 hover:border-brand transition-colors duration-500 shadow-soft fade-in-up flex flex-col relative overflow-hidden">
+                    <div class="flex justify-between items-start mb-8 relative z-10">
+                        <div class="bg-surface_light w-16 h-16 rounded-2xl flex items-center justify-center text-3xl text-brand group-hover:bg-brand group-hover:text-white transition-colors duration-500"><i class="ph-fill ph-student"></i></div>
+                        <span class="bg-surface_light border border-surface_light px-4 py-1.5 rounded-full text-xs font-bold text-slate-300">L1 - L3</span>
+                    </div>
+                    <h3 class="text-3xl font-black text-white mb-4 relative z-10">Entrer en Licence</h3>
+                    <p class="text-slate-400 text-base leading-relaxed mb-8 flex-grow relative z-10">Parcoursup, intégration, organisation des cours... Plonge dans notre guide interactif dédié pour réussir ton arrivée et tes premières années à la Sorbonne, ou rejoins la communauté dès maintenant.</p>
+                    
+                    <div class="mt-auto flex flex-col xl:flex-row gap-4 relative z-10">
+                        <a href="https://jpo.aseedsorbonne.com" target="_blank" class="w-full text-center font-bold text-white bg-brand px-6 py-4 rounded-xl hover:bg-brand-600 transition-colors uppercase tracking-wider text-xs shadow-glow">
+                            Voir le guide <i class="ph-bold ph-arrow-right"></i>
+                        </a>
+                        <a href="https://linktr.ee/aseedsorbonne" target="_blank" class="w-full text-center font-bold text-white border border-surface_light bg-surface hover:bg-surface_light px-6 py-4 rounded-xl transition-colors uppercase tracking-wider text-xs">
+                            Groupes de promo <i class="ph-bold ph-users"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Carte Master -->
+                <div class="group dark-card rounded-[2.5rem] p-10 md:p-12 shadow-soft fade-in-up flex flex-col relative overflow-hidden border-dashed" style="transition-delay: 100ms;">
+                    
+                    <div class="absolute inset-0 bg-dark/60 backdrop-blur-[1px] z-20 flex items-center justify-center rounded-[2.5rem]">
+                        <span class="bg-surface border border-surface_light text-white px-6 py-3 rounded-xl font-bold uppercase tracking-widest text-sm shadow-xl flex items-center gap-2">
+                            <i class="ph-bold ph-hourglass-high text-brand animate-pulse"></i> Prochainement
+                        </span>
+                    </div>
+
+                    <div class="relative z-10 opacity-50">
+                        <div class="flex justify-between items-start mb-8">
+                            <div class="bg-surface_light w-16 h-16 rounded-2xl flex items-center justify-center text-3xl text-slate-500"><i class="ph-fill ph-graduation-cap"></i></div>
+                            <span class="bg-surface_light px-4 py-1.5 rounded-full text-xs font-bold text-slate-500">M1 - M2</span>
+                        </div>
+                        <h3 class="text-3xl font-black text-white mb-4">Candidater en Master</h3>
+                        <p class="text-slate-400 text-base leading-relaxed mb-8 flex-grow">Sélection, lettres de motivation, CV... Nous t'accompagnerons très bientôt avec un guide complet pour décrocher le Master de tes rêves.</p>
+                        
+                        <div class="mt-auto">
+                            <span class="inline-flex items-center gap-2 font-bold text-slate-500 text-sm uppercase tracking-wider bg-surface_light px-6 py-3 rounded-xl">
+                                En construction
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. BLOC NOS MISSIONS -->
+    <section id="missions" class="py-24 px-6 relative z-10 bg-surface border-y border-surface_light">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 fade-in-up">
+                <span class="text-brand font-bold uppercase tracking-widest text-sm mb-2 block">Notre ADN</span>
+                <h2 class="text-4xl md:text-5xl font-black tracking-tight text-white">Nos missions au quotidien</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Représentation -->
+                <div class="dark-card rounded-[2rem] p-8 shadow-soft hover:border-brand transition-colors duration-300 fade-in-up">
+                    <div class="w-14 h-14 bg-surface_light text-brand rounded-xl flex items-center justify-center text-3xl mb-6"><i class="ph-fill ph-gavel"></i></div>
+                    <h3 class="text-xl font-bold text-white mb-3">Représentation</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Nous représentons en conseils, les étudiant.es de manière indépendante et apartisane.</p>
+                </div>
+
+                <!-- Vie Étudiante -->
+                <div class="dark-card rounded-[2rem] p-8 shadow-soft hover:border-brand transition-colors duration-300 fade-in-up" style="transition-delay: 100ms;">
+                    <div class="w-14 h-14 bg-surface_light text-blue-400 rounded-xl flex items-center justify-center text-3xl mb-6"><i class="ph-fill ph-confetti"></i></div>
+                    <h3 class="text-xl font-bold text-white mb-3">Vie Étudiante</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Soirées, Week-End d'Intégration, Ski Sorbonne, nous animons la vie étudiante de Paris 1!</p>
+                </div>
+
+                <!-- Culture -->
+                <div class="dark-card rounded-[2rem] p-8 shadow-soft hover:border-brand transition-colors duration-300 fade-in-up" style="transition-delay: 200ms;">
+                    <div class="w-14 h-14 bg-surface_light text-purple-400 rounded-xl flex items-center justify-center text-3xl mb-6"><i class="ph-fill ph-masks-theater"></i></div>
+                    <h3 class="text-xl font-bold text-white mb-3">Culture & Sorties</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Sorties juridiques, Sorties culturelles, Conférences, Actualité juridique.</p>
+                </div>
+
+                <!-- Orientation -->
+                <div class="dark-card rounded-[2rem] p-8 shadow-soft hover:border-brand transition-colors duration-300 fade-in-up" style="transition-delay: 300ms;">
+                    <div class="w-14 h-14 bg-surface_light text-emerald-400 rounded-xl flex items-center justify-center text-3xl mb-6"><i class="ph-fill ph-compass"></i></div>
+                    <h3 class="text-xl font-bold text-white mb-3">Orientation et promotion des filières juridiques</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Rencontres avec des professionnels, Brunch des Masters, Ateliers CV et LM.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. BLOC RÉSEAUX / REJOINDRE -->
+    <section class="py-24 px-6 fade-in-up">
+        <div class="max-w-6xl mx-auto">
+            <div class="dark-card rounded-[3rem] p-12 md:p-20 text-center shadow-soft relative overflow-hidden flex flex-col justify-center items-center">
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-brand-600/10 rounded-full filter blur-[100px] pointer-events-none"></div>
+                
+                <span class="font-hand text-brand text-4xl md:text-5xl rotate-[-2deg] inline-block mb-4 relative z-10">Rejoignez l'aventure</span>
+                <h2 class="text-4xl md:text-5xl font-black text-white mb-6 tracking-tight relative z-10">Suivez notre actualité</h2>
+                <p class="text-slate-400 text-lg mb-12 max-w-2xl mx-auto leading-relaxed relative z-10">Ne manquez aucune information importante, aucun événement et aucune opportunité en nous suivant sur nos réseaux.</p>
+                
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-5 w-full sm:w-auto relative z-10">
+                    <a href="https://instagram.com/aseedsorbonne" target="_blank" class="w-full sm:w-auto px-10 py-5 bg-surface border border-surface_light text-white rounded-xl font-bold hover:bg-brand hover:border-brand transition-colors shadow-soft flex items-center justify-center gap-3 text-lg">
+                        <i class="ph-bold ph-instagram-logo text-2xl"></i> Instagram
+                    </a>
+                    <a href="https://www.linkedin.com/in/aseedsorbonne/" target="_blank" class="w-full sm:w-auto px-10 py-5 bg-surface border border-surface_light text-white rounded-xl font-bold hover:bg-[#0077b5] hover:border-[#0077b5] transition-colors shadow-soft flex items-center justify-center gap-3 text-lg">
+                        <i class="ph-bold ph-linkedin-logo text-2xl"></i> LinkedIn
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. BLOC CONTACT -->
+    <section id="contact" class="pb-24 px-6 fade-in-up">
+        <div class="max-w-4xl mx-auto">
+            <div class="bg-surface rounded-[3rem] p-12 md:p-16 text-center shadow-soft border border-surface_light flex flex-col justify-center items-center">
+                <div class="w-20 h-20 bg-dark text-brand rounded-2xl flex items-center justify-center text-4xl mb-6 shadow-soft border border-surface_light">
+                    <i class="ph-fill ph-paper-plane-tilt"></i>
+                </div>
+                <h2 class="text-3xl md:text-4xl font-black text-white mb-4 tracking-tight">Une question ?</h2>
+                <p class="text-slate-400 text-lg mb-10 leading-relaxed max-w-lg">
+                    Un problème de scolarité, une envie de devenir membre ou juste besoin d'une info ? L'équipe est à votre écoute.
+                </p>
+                
+                <a href="mailto:contact@aseedsorbonne.com" class="inline-flex items-center justify-center gap-3 px-8 py-4 bg-brand text-white rounded-xl font-bold hover:bg-brand-600 transition-colors shadow-glow text-lg w-full sm:w-auto">
+                    <i class="ph-bold ph-envelope-simple text-xl"></i> contact@aseedsorbonne.com
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="dark-card border-t border-surface_light pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
+                <div class="flex items-center gap-3">
+                    <img src="https://aseedsorbonne.com/logo.png" alt="Logo AsEED" class="h-10 w-auto">
+                    <span class="font-extrabold text-xl text-white tracking-tight">AsEED Sorbonne</span>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <a href="https://instagram.com/aseedsorbonne" target="_blank" class="w-12 h-12 rounded-xl bg-surface flex items-center justify-center text-slate-400 hover:bg-brand hover:text-white border border-surface_light transition-colors"><i class="ph-bold ph-instagram-logo text-xl"></i></a>
+                    <a href="https://www.linkedin.com/in/aseedsorbonne/" target="_blank" class="w-12 h-12 rounded-xl bg-surface flex items-center justify-center text-slate-400 hover:bg-[#0077b5] hover:text-white border border-surface_light transition-colors"><i class="ph-bold ph-linkedin-logo text-xl"></i></a>
+                </div>
+            </div>
+            
+            <div class="text-center text-slate-500 text-sm font-medium border-t border-surface_light pt-8 flex flex-col gap-2">
+                <p>L'association de filière des étudiant·es en droit de Paris 1 depuis 2010.</p>
+                <p>© 2026 AsEED Sorbonne - Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script>
+        // Animation au scroll
+        const observer = new IntersectionObserver((entries) => { 
+            entries.forEach(entry => { 
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible'); 
                 }
-            })
-            .catch(() => console.log("Pas d'évènements."));
+            }); 
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.fade-in-up').forEach(el => observer.observe(el));
+
+        // Remplacement de la bannière si gérée par le CMS (Data.json)
+        fetch('content/data.json')
+            .then(r => r.ok ? r.json() : null)
+            .then(data => {
+                if (data && data.announcement && data.announcement.active) {
+                    document.getElementById('banner-text').innerText = data.announcement.text;
+                }
+            }).catch(e => console.log("Bannière par défaut conservée."));
     </script>
 </body>
 </html>
