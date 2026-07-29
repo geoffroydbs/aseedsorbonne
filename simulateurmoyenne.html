@@ -1,575 +1,964 @@
-"""<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-width=1.0">
-    <title>Simulateur de Moyenne - AsEED Sorbonne</title>
-    <style>
-        :root {
-            --primary: #E65100; /* Orange AsEED */
-            --primary-light: #FF9800;
-            --primary-dark: #b33c00;
-            --bg-color: #f8f9fa;
-            --card-bg: #ffffff;
-            --text-dark: #2d3748;
-            --text-muted: #718096;
-            --border-color: #e2e8f0;
-            --radius: 8px;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Le Registre — Simulateur de moyenne · AsEED Sorbonne</title>
+<link rel="icon" href="https://aseedsorbonne.com/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#241a12;
+    --ink-soft:#3a2a1c;
+    --paper:#fbf5ea;
+    --paper-deep:#f2e6d1;
+    --paper-line:#e6d2ac;
+    --card:#fffaf0;
+    --red:#E8621E;
+    --red-deep:#B0430F;
+    --orange-light:#F2915A;
+    --gold:#c97a1f;
+    --gold-light:#e0a13f;
+    --muted:#7d7062;
+    --good:#2f6b46;
+    --bad:#8c2f2f;
+    --bg-dark:#20140b;
+    --shadow: 0 8px 24px -12px rgba(32,20,11,.4);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 10% -10%, #5a2f10 0%, transparent 60%),
+      var(--bg-dark);
+    color:var(--ink);
+    font-family:'Source Sans 3', sans-serif;
+    min-height:100vh;
+  }
+  h1,h2,h3,.display{font-family:'Fraunces', serif;}
+  .wrap{max-width:1200px;margin:0 auto;padding:28px 20px 80px;}
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+  /* ---------- Header ---------- */
+  header.top{
+    display:flex; align-items:flex-end; justify-content:space-between; gap:24px;
+    color:var(--paper); padding:10px 6px 26px; flex-wrap:wrap;
+  }
+  .crest{
+    width:52px;height:52px;border-radius:14px;
+    background:#fffaf0;
+    border:2px solid var(--red); box-shadow:0 0 0 3px rgba(232,98,30,.18);
+    display:flex;align-items:center;justify-content:center;
+    padding:5px; flex-shrink:0;
+  }
+  .crest img{width:100%;height:100%;object-fit:contain;display:block;}
+  header.top .titles{display:flex;align-items:center;gap:14px;}
+  header.top h1{font-size:clamp(24px,4vw,34px);font-weight:600;margin:0;letter-spacing:.2px;}
+  header.top .eyebrow{
+    text-transform:uppercase;letter-spacing:.16em;font-size:11px;color:var(--orange-light);
+    margin:0 0 4px;font-weight:600;
+  }
+  header.top p.sub{margin:4px 0 0;color:#e6d5c2;font-size:14.5px;max-width:520px;}
+  header.top .meta{font-size:12px;color:#c9b299;text-align:right;line-height:1.6;}
 
-        body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-dark);
-            line-height: 1.6;
-        }
+  /* ---------- Folder tabs ---------- */
+  .tabbar{display:flex;gap:6px;padding:0 6px;position:relative;top:1px;z-index:2;}
+  .tab{
+    font-family:'Fraunces',serif; font-weight:600; font-size:17px;
+    padding:12px 26px 14px; border-radius:12px 12px 0 0; cursor:pointer;
+    background:var(--paper-deep); color:var(--muted); border:1px solid var(--paper-line);
+    border-bottom:none; position:relative; top:2px; transition:.15s ease;
+  }
+  .tab .ects-tag{display:block;font-family:'Source Sans 3';font-weight:600;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:2px;}
+  .tab.active{background:var(--paper); color:var(--red-deep); top:0; box-shadow:0 -2px 0 var(--red) inset;}
+  .tab.active .ects-tag{color:var(--red);}
+  .tab:not(.active):hover{background:#ded3b4;}
 
-        header {
-            background-color: var(--primary);
-            color: white;
-            padding: 2rem 1rem;
-            text-align: center;
-            box-shadow: var(--shadow);
-        }
+  main.sheet{
+    background:var(--paper); border:1px solid var(--paper-line); border-radius:0 10px 10px 10px;
+    box-shadow:var(--shadow); padding:0;
+  }
+  .layout{display:grid; grid-template-columns: 300px 1fr; gap:0;}
+  @media (max-width:900px){ .layout{grid-template-columns:1fr;} }
 
-        header h1 {
-            font-size: 2.2rem;
-            margin-bottom: 0.5rem;
-        }
+  /* ---------- Sidebar / seal ---------- */
+  .sidebar{
+    border-right:1px solid var(--paper-line); padding:26px 22px; position:sticky; top:0; align-self:start;
+    background:linear-gradient(180deg, var(--card), var(--paper-deep));
+  }
+  @media (max-width:900px){ .sidebar{position:static; border-right:none; border-bottom:1px solid var(--paper-line);} }
 
-        header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
+  .seal-wrap{display:flex;flex-direction:column;align-items:center;margin-bottom:22px;}
+  .seal{
+    width:150px;height:150px;border-radius:50%; position:relative;
+    background: radial-gradient(circle at 35% 30%, #F2864A, var(--red) 55%, var(--red-deep) 100%);
+    box-shadow: inset 0 0 0 3px rgba(255,255,255,.12), 0 10px 22px -10px rgba(176,67,15,.6);
+    display:flex;align-items:center;justify-content:center;flex-direction:column;
+    border:2px solid #7a3110;
+  }
+  .seal::before{
+    content:''; position:absolute; inset:8px; border-radius:50%;
+    border:1px dashed rgba(255,255,255,.4);
+  }
+  .seal .num{font-family:'Fraunces',serif;font-weight:700;font-size:40px;color:#fff6ea;line-height:1;}
+  .seal .denom{font-size:12px;color:#fbdcc0;margin-top:2px;letter-spacing:.06em;}
+  .seal .curve{
+    position:absolute;top:50%;left:50%;width:180px;height:180px;transform:translate(-50%,-50%);
+    pointer-events:none;
+  }
+  .status-pill{
+    margin-top:12px; padding:5px 14px; border-radius:999px; font-size:12px; font-weight:600;
+    letter-spacing:.04em; text-transform:uppercase; border:1px solid transparent;
+  }
+  .status-pill.ok{background:#e4efe6;color:var(--good);border-color:#b9d6c1;}
+  .status-pill.warn{background:#f6ecd8;color:#8a5a19;border-color:#e2c98f;}
+  .status-pill.bad{background:#f3e2e0;color:var(--bad);border-color:#e2b3af;}
+  .status-pill.empty{background:#eee7d5;color:var(--muted);border-color:var(--paper-line);}
 
-        .container {
-            max-width: 1000px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
+  .subtotals{margin-top:18px;border-top:1px dashed var(--paper-line);padding-top:14px;}
+  .subtotal-row{display:flex;justify-content:space-between;font-size:13.5px;padding:5px 0;color:var(--ink-soft);}
+  .subtotal-row b{font-variant-numeric:tabular-nums;}
+  .subtotal-row.annual{border-top:1px solid var(--paper-line);margin-top:6px;padding-top:10px;font-weight:700;color:var(--red-deep);}
 
-        .notice {
-            background-color: #fff3cd;
-            color: #856404;
-            border-left: 5px solid #ffeeba;
-            padding: 1rem;
-            margin-bottom: 2rem;
-            border-radius: var(--radius);
-            font-size: 0.95rem;
-        }
+  .bonus-line{display:flex;justify-content:space-between;font-size:12.5px;color:var(--gold);margin-top:8px;}
 
-        .controls {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
+  .fill-status{font-size:11.5px;color:var(--muted);margin-top:14px;line-height:1.5;}
 
-        .btn-level {
-            background-color: var(--card-bg);
-            border: 2px solid var(--border-color);
-            color: var(--text-dark);
-            padding: 0.75rem 2rem;
-            font-size: 1.1rem;
-            font-weight: bold;
-            border-radius: var(--radius);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
+  .legend-btn{
+    margin-top:18px;width:100%;background:none;border:1px solid var(--paper-line);border-radius:8px;
+    padding:9px 10px;font-size:12.5px;color:var(--muted);cursor:pointer;font-family:inherit;
+    display:flex;align-items:center;gap:6px;justify-content:center;
+  }
+  .legend-btn:hover{background:var(--paper-deep);}
+  .reset-btn{margin-top:8px;}
 
-        .btn-level:hover {
-            border-color: var(--primary-light);
-        }
+  /* ---------- Content ---------- */
+  .content{padding:20px 26px 40px;}
+  .sem-nav{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+  .sem-btn{
+    font-size:12.5px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;
+    padding:7px 14px;border-radius:999px;border:1px solid var(--paper-line);
+    background:var(--card);color:var(--muted);cursor:pointer;
+  }
+  .sem-btn.active{background:var(--ink);color:var(--paper);border-color:var(--ink);}
 
-        .btn-level.active {
-            background-color: var(--primary);
-            border-color: var(--primary);
-            color: white;
-        }
+  .sem-block{display:none;}
+  .sem-block.visible{display:block;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
 
-        .section-card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            box-shadow: var(--shadow);
-        }
+  .ue-card{
+    background:var(--card); border:1px solid var(--paper-line); border-radius:10px;
+    margin-bottom:16px; overflow:hidden;
+  }
+  .ue-head{
+    background:linear-gradient(90deg, var(--red-deep), var(--red));
+    color:#f4e6de; padding:10px 16px; font-size:14px; font-weight:600;
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+  }
+  .ue-head .ue-badges{font-size:11.5px;font-weight:600;opacity:.9;white-space:nowrap;}
+  .ue-body{padding:10px 16px 14px;}
+  .ue-note{font-size:12px;color:var(--muted);font-style:italic;margin:4px 0 10px;}
 
-        .section-card h2 {
-            color: var(--primary-dark);
-            border-bottom: 2px solid var(--primary-light);
-            padding-bottom: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
+  .subgroup-label{
+    font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--gold);
+    font-weight:700;margin:12px 0 6px;
+  }
 
-        .subject-row {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 1rem;
-            align-items: center;
-            padding: 1rem 0;
-            border-bottom: 1px solid var(--border-color);
-        }
+  .grade-row{
+    border:1px solid var(--paper-line); border-radius:8px; padding:9px 12px; margin-bottom:8px;
+    background:#fffdf7; transition:.15s ease;
+  }
+  .grade-row.inactive{opacity:.42;background:#f2ede1;}
+  .grade-row.inactive .row-inputs{display:none;}
+  .row-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+  .row-left{display:flex;align-items:center;gap:9px;flex:1;min-width:180px;}
+  .row-left input[type=radio], .row-left input[type=checkbox]{width:16px;height:16px;accent-color:var(--red);flex-shrink:0;cursor:pointer;}
+  .row-left label.course-name{font-weight:600;font-size:14px;color:var(--ink);cursor:pointer;}
+  .grade-row.fixed .row-left .marker{
+    width:6px;height:6px;border-radius:50%;background:var(--gold);flex-shrink:0;
+  }
+  .badges{font-size:11px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums;}
+  .badges b{color:var(--red-deep);}
+  .row-inputs{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;}
+  .in-field{display:flex;flex-direction:column;gap:3px;}
+  .in-field label{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600;}
+  .in-field input{
+    width:78px; padding:6px 8px; border:1px solid var(--paper-line); border-radius:6px;
+    font-size:14px; font-family:'Source Sans 3'; font-variant-numeric:tabular-nums;
+    background:#fff;
+  }
+  .in-field input:focus{outline:2px solid var(--gold-light);outline-offset:1px;border-color:var(--gold);}
+  .td-toggle{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--red-deep);font-weight:600;cursor:pointer;background:#f4e9dc;padding:4px 9px;border-radius:6px;border:1px solid var(--paper-line);white-space:nowrap;}
+  .td-toggle input{cursor:pointer;accent-color:var(--red);}
+  .row-computed{font-size:12px;color:var(--good);font-weight:700;margin-left:auto;align-self:center;font-variant-numeric:tabular-nums;}
 
-        .subject-row:last-child {
-            border-bottom: none;
-        }
+  .cap-note{font-size:11px;color:var(--muted);margin:2px 0 8px;}
 
-        .subject-info h4 {
-            font-size: 1.05rem;
-            color: var(--text-dark);
-            margin-bottom: 0.2rem;
-        }
+  .ceja-box{
+    margin-top:10px;border:1px dashed var(--gold);border-radius:8px;padding:10px 12px;background:#faf3e2;
+    display:none;
+  }
+  .ceja-box.visible{display:block;}
+  .ceja-box .subgroup-label{margin-top:6px;}
 
-        .subject-info span {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            background: var(--bg-color);
-            padding: 0.2rem 0.6rem;
-            border-radius: 12px;
-            display: inline-block;
-        }
+  .bonus-card{border-color:var(--gold-light);}
+  .bonus-card .ue-head{background:linear-gradient(90deg,#5f4a1a, var(--gold));color:#2a2005;}
 
-        .inputs-group {
-            display: flex;
-            gap: 0.5rem;
-            justify-content: flex-end;
-            flex-wrap: wrap;
-        }
+  footer.notes{
+    margin-top:24px;color:#cdc6b1;font-size:12px;line-height:1.7;max-width:900px;
+  }
+  footer.notes b{color:#f0e6d0;}
 
-        .input-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+  .info-panel{
+    display:none;background:var(--card);border:1px solid var(--paper-line);border-radius:8px;
+    padding:14px 16px;font-size:12.5px;color:var(--ink-soft);line-height:1.6;margin-top:14px;
+  }
+  .info-panel.visible{display:block;}
+  .info-panel h4{margin:0 0 6px;font-size:13px;font-family:'Fraunces',serif;}
+  .info-panel ul{margin:6px 0 0;padding-left:18px;}
 
-        .input-wrapper label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-bottom: 0.2rem;
-        }
-
-        input[type="number"] {
-            width: 70px;
-            padding: 0.5rem;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            text-align: center;
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.2s ease;
-        }
-
-        input[type="number"]:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(230, 81, 0, 0.2);
-        }
-
-        .results-panel {
-            position: sticky;
-            bottom: 0;
-            background: var(--primary-dark);
-            color: white;
-            padding: 1.5rem;
-            border-radius: var(--radius) var(--radius) 0 0;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            box-shadow: 0 -4px 10px rgba(0,0,0,0.15);
-            margin-top: 3rem;
-            z-index: 100;
-        }
-
-        .result-box {
-            text-align: center;
-        }
-
-        .result-box h3 {
-            font-size: 1rem;
-            opacity: 0.9;
-            margin-bottom: 0.3rem;
-        }
-
-        .result-value {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #FFD54F;
-        }
-        
-        .methodology {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            background: white;
-            padding: 1.5rem;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            margin-top: 2rem;
-            margin-bottom: 4rem;
-        }
-        
-        .methodology h3 {
-            color: var(--primary);
-            margin-bottom: 0.5rem;
-        }
-        
-        .methodology ul {
-            margin-left: 1.5rem;
-        }
-
-        @media (max-width: 768px) {
-            .subject-row {
-                grid-template-columns: 1fr;
-            }
-            .inputs-group {
-                justify-content: flex-start;
-                margin-top: 0.5rem;
-            }
-            .results-panel {
-                flex-direction: column;
-                gap: 1rem;
-            }
-        }
-    </style>
+  ::selection{background:var(--gold-light);}
+</style>
 </head>
 <body>
+<div class="wrap">
 
-    <header>
-        <h1>Simulateur de Moyenne</h1>
-        <p>Association des Étudiants de l'École de Droit de la Sorbonne (AsEED)</p>
-    </header>
-
-    <div class="container">
-        <div class="notice">
-            <strong>⚠️ Avertissement :</strong> Ce simulateur est fourni à titre <em>purement informatif</em>. Les résultats calculés ne tiennent pas compte des éventuelles règles spécifiques de compensation, des points de jury, ou des délibérations finales officielles des jurys de l'EDS. Seuls vos relevés de notes officiels font foi.
-        </div>
-
-        <div class="controls">
-            <button class="btn-level active" onclick="loadLevel('L1')">Licence 1</button>
-            <button class="btn-level" onclick="loadLevel('L2')">Licence 2</button>
-            <button class="btn-level" onclick="loadLevel('L3')">Licence 3</button>
-        </div>
-
-        <div id="form-container">
-            <!-- Dynamically populated by JS -->
-        </div>
-
-        <div class="methodology">
-            <h3>Méthode de calcul appliquée :</h3>
-            <ul>
-                <li><strong>Matières avec TD :</strong> 50% Examen terminal / 50% Contrôle Continu (CC).</li>
-                <li><strong>Matières annualisées :</strong> La moyenne est calculée sur la base du CC divisé en deux (CC S1 50% et CC S2 50%) et des examens semestriels.</li>
-                <li><strong>Matières sans TD :</strong> 100% Examen terminal.</li>
-                <li><strong>Style et méthodologie juridique :</strong> 1 seule note comptabilisée (100%).</li>
-                <li><strong>Bonus facultatifs (Sport, Langues, etc.) :</strong> Seuls les points au-dessus de 10/20 sont ajoutés au total général des points avant division par la somme des coefficients.</li>
-            </ul>
-        </div>
+  <header class="top">
+    <div>
+      <p class="eyebrow">AsEED Sorbonne · École de droit de la Sorbonne</p>
+      <div class="titles">
+        <div class="crest"><img src="https://aseedsorbonne.com/logo.png" alt="Logo AsEED Sorbonne"></div>
+        <h1>Le Registre — simulateur de moyenne</h1>
+      </div>
+      <p class="sub">Licence 1, 2 et 3 Droit — maquette 2025–2030. Choisissez vos options, saisissez vos notes de contrôle continu et d'examen, la moyenne se calcule au fil de la saisie.</p>
     </div>
+    <div class="meta">Barème /20 · pondération par coefficients<br>Simulation indicative — ne remplace pas le jury</div>
+  </header>
 
-    <div class="results-panel">
-        <div class="result-box">
-            <h3>Semestre 1 (ou 5)</h3>
-            <div class="result-value" id="res-s1">--/20</div>
+  <div class="tabbar" id="tabbar">
+    <div class="tab active" data-year="l1">Licence 1<span class="ects-tag">60 ECTS</span></div>
+    <div class="tab" data-year="l2">Licence 2<span class="ects-tag">60 ECTS</span></div>
+    <div class="tab" data-year="l3">Licence 3<span class="ects-tag">60 ECTS</span></div>
+  </div>
+
+  <main class="sheet">
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="seal-wrap">
+          <div class="seal">
+            <div class="num" id="seal-num">—</div>
+            <div class="denom">/ 20</div>
+          </div>
+          <div class="status-pill empty" id="status-pill">En attente de notes</div>
         </div>
-        <div class="result-box">
-            <h3>Semestre 2 (ou 6)</h3>
-            <div class="result-value" id="res-s2">--/20</div>
+
+        <div class="subtotals" id="subtotals">
+          <!-- filled by JS -->
         </div>
-        <div class="result-box">
-            <h3>Moyenne Annuelle</h3>
-            <div class="result-value" id="res-year">--/20</div>
-        </div>
+        <div class="bonus-line" id="bonus-line" style="display:none;"></div>
+        <div class="fill-status" id="fill-status"></div>
+
+        <button class="legend-btn" id="toggle-info">ⓘ Règles de calcul retenues</button>
+        <button class="legend-btn reset-btn" id="reset-btn">↺ Réinitialiser cette année</button>
+
+        <div class="info-panel" id="info-panel"></div>
+      </aside>
+
+      <section class="content">
+        <div class="sem-nav" id="sem-nav"></div>
+        <div id="panels"></div>
+      </section>
     </div>
+  </main>
 
-    <script>
-        const config = {
-            L1: [
-                {
-                    title: "Matières Annualisées",
-                    subjects: [
-                        { id: 'l1_a1', name: 'Droit privé', coef: 8, type: 'ann' },
-                        { id: 'l1_a2', name: 'Droit Constitutionnel', coef: 8, type: 'ann' }
-                    ]
-                },
-                {
-                    title: "Semestre 1",
-                    subjects: [
-                        { id: 'l1_s1_1', name: 'Introduction historique au droit', coef: 4, type: 'td' },
-                        { id: 'l1_s1_2', name: 'Droit civil (Personnes)', coef: 2, type: 'exam' },
-                        { id: 'l1_s1_3', name: 'Institutions juridictionnelles', coef: 2, type: 'exam' },
-                        { id: 'l1_s1_4', name: 'Grands enjeux juridiques', coef: 2, type: 'exam' },
-                        { id: 'l1_s1_5', name: 'Matière au choix (Sc. Pol / Eco / Hist. Idées)', coef: 2, type: 'exam' },
-                        { id: 'l1_s1_6', name: 'Langue 1 (Anglais / Espagnol)', coef: 2, type: 'single' },
-                        { id: 'l1_s1_7', name: 'Style et méthodologie juridiques', coef: 1, type: 'single' }
-                    ]
-                },
-                {
-                    title: "Semestre 2",
-                    subjects: [
-                        { id: 'l1_s2_1', name: 'Matière avec TD au choix (Pénal/Biens/Finances/Inter.)', coef: 4, type: 'td' },
-                        { id: 'l1_s2_2', name: 'Matière sans TD au choix 1', coef: 2, type: 'exam' },
-                        { id: 'l1_s2_3', name: 'Matière sans TD au choix 2', coef: 2, type: 'exam' },
-                        { id: 'l1_s2_4', name: 'Matière sans TD au choix 3', coef: 2, type: 'exam' },
-                        { id: 'l1_s2_5', name: 'Matière au choix (Dév. Durable / IA)', coef: 2, type: 'exam' },
-                        { id: 'l1_s2_6', name: 'Langue 2 (Anglais / Espagnol)', coef: 2, type: 'single' }
-                    ]
-                },
-                {
-                    title: "Bonifications (Facultatif)",
-                    subjects: [
-                        { id: 'l1_b1', name: 'Bonus (Sport, Langue, Culture, Certificat EDS)', coef: 0, type: 'bonus' }
-                    ]
-                }
-            ],
-            L2: [
-                {
-                    title: "Matières Annualisées",
-                    subjects: [
-                        { id: 'l2_a1', name: 'Droit des obligations', coef: 8, type: 'ann' },
-                        { id: 'l2_a2', name: 'Droit administratif', coef: 8, type: 'ann' }
-                    ]
-                },
-                {
-                    title: "Semestre 3",
-                    subjects: [
-                        { id: 'l2_s1_1', name: 'Matière avec TD au choix (Affaires/Proc. Pénal/Européen/Inter.)', coef: 4, type: 'td' },
-                        { id: 'l2_s1_2', name: 'Matière sans TD 1', coef: 2, type: 'exam' },
-                        { id: 'l2_s1_3', name: 'Matière sans TD 2', coef: 2, type: 'exam' },
-                        { id: 'l2_s1_4', name: 'Matière sans TD 3', coef: 2, type: 'exam' },
-                        { id: 'l2_s1_5', name: 'Histoire au choix (Obligations/Admin/Pénal)', coef: 2, type: 'exam' },
-                        { id: 'l2_s1_6', name: 'Langue (Anglais / Espagnol)', coef: 2, type: 'single' }
-                    ]
-                },
-                {
-                    title: "Semestre 4",
-                    subjects: [
-                        { id: 'l2_s2_1', name: 'Matière avec TD (Travail/Sociétés/Fiscal/UE/Pénal spé)', coef: 4, type: 'td' },
-                        { id: 'l2_s2_2', name: 'Matière sans TD 1', coef: 2, type: 'exam' },
-                        { id: 'l2_s2_3', name: 'Matière sans TD 2', coef: 2, type: 'exam' },
-                        { id: 'l2_s2_4', name: 'Matière sans TD 3', coef: 2, type: 'exam' },
-                        { id: 'l2_s2_5', name: 'Histoire / Grands enjeux au choix', coef: 2, type: 'exam' },
-                        { id: 'l2_s2_6', name: 'Langue (Anglais / Espagnol)', coef: 2, type: 'single' }
-                    ]
-                },
-                {
-                    title: "Bonifications (Facultatif)",
-                    subjects: [
-                        { id: 'l2_b1', name: 'Bonus (Sport, Langue, Culture, Certificat EDS)', coef: 0, type: 'bonus' }
-                    ]
-                }
-            ],
-            L3: [
-                {
-                    title: "Semestre 5",
-                    subjects: [
-                        { id: 'l3_s1_1', name: 'Matière fondamentale avec TD 1', coef: 4, type: 'td' },
-                        { id: 'l3_s1_2', name: 'Matière fondamentale avec TD 2', coef: 4, type: 'td' },
-                        { id: 'l3_s1_3', name: 'Matière fondamentale avec TD 3', coef: 4, type: 'td' },
-                        { id: 'l3_s1_4', name: 'Matière sans TD 1', coef: 2, type: 'exam' },
-                        { id: 'l3_s1_5', name: 'Matière sans TD 2', coef: 2, type: 'exam' },
-                        { id: 'l3_s1_6', name: 'Matière transversale sans TD 1', coef: 2, type: 'exam' },
-                        { id: 'l3_s1_7', name: 'Matière transversale sans TD 2', coef: 2, type: 'exam' },
-                        { id: 'l3_s1_8', name: 'Langue (Anglais / Espagnol)', coef: 2, type: 'single' }
-                    ]
-                },
-                {
-                    title: "Semestre 6 (Structure PPL & Séminaires)",
-                    subjects: [
-                        { id: 'l3_s2_1', name: 'Projet Personnel (Pro/Inter/Alt/Recherche)', coef: 10, type: 'single' },
-                        { id: 'l3_s2_2', name: 'Matière avec TD 1 (Spécialisation)', coef: 2, type: 'td' },
-                        { id: 'l3_s2_3', name: 'Matière avec TD 2 (Spécialisation)', coef: 2, type: 'td' },
-                        { id: 'l3_s2_4', name: 'Matière avec TD 3 (Spécialisation)', coef: 2, type: 'td' },
-                        { id: 'l3_s2_5', name: 'Culture générale (Prépa Grand Oral)', coef: 1, type: 'exam' },
-                        { id: 'l3_s2_6', name: 'Ethique, déontologie (Prépa Grand Oral)', coef: 1, type: 'exam' },
-                        { id: 'l3_s2_7', name: 'Séminaire au choix 1', coef: 1, type: 'single' },
-                        { id: 'l3_s2_8', name: 'Séminaire au choix 2', coef: 1, type: 'single' },
-                        { id: 'l3_s2_9', name: 'Langue juridique', coef: 2, type: 'single' }
-                    ]
-                },
-                {
-                    title: "Bonifications (Facultatif)",
-                    subjects: [
-                        { id: 'l3_b1', name: 'Bonus (Sport, Langue, Culture, Certificat EDS)', coef: 0, type: 'bonus' }
-                    ]
-                }
-            ]
-        };
+  <footer class="notes">
+    <p><b>Hypothèses de calcul</b> — la maquette officielle fixe les coefficients et crédits ECTS de chaque enseignement, mais ne détaille pas toujours la pondération interne CC/examen ni le barème exact des bonifications. Ce simulateur applique par défaut : (1) une note = 50&nbsp;% contrôle continu + 50&nbsp;% examen terminal pour toute matière assortie de travaux dirigés, sauf mention « CC intégral » dans la maquette où la note est alors 100&nbsp;% contrôle continu ; (2) une note = 100&nbsp;% examen terminal pour les matières sans TD ; (3) les matières annualisées avec TD sont divisées en notes de S1 et de S2 (CC et Examen), avec un poids égal de 50% pour chaque semestre. (4) les unités de bonification ne comptent pas dans le coefficient principal et ajoutent jusqu'à 0,5&nbsp;point sur la moyenne finale lorsque la note dépasse 10/20.</p>
+  </footer>
+</div>
 
-        function renderInput(sub) {
-            if (sub.type === 'ann') {
-                return `
-                    <div class="input-wrapper"><label>Ex S1</label><input type="number" min="0" max="20" step="0.25" data-id="${sub.id}_ex1" oninput="calculate()"></div>
-                    <div class="input-wrapper"><label>CC S1</label><input type="number" min="0" max="20" step="0.25" data-id="${sub.id}_cc1" oninput="calculate()"></div>
-                    <div class="input-wrapper"><label>Ex S2</label><input type="number" min="0" max="20" step="0.25" data-id="${sub.id}_ex2" oninput="calculate()"></div>
-                    <div class="input-wrapper"><label>CC S2</label><input type="number" min="0" max="20" step="0.25" data-id="${sub.id}_cc2" oninput="calculate()"></div>
-                `;
-            } else if (sub.type === 'td') {
-                return `
-                    <div class="input-wrapper"><label>Examen</label><input type="number" min="0" max="20" step="0.25" data-id="${sub.id}_ex" oninput="calculate()"></div>
-                    <div class="input-wrapper"><label>CC</label><input type="number" min="0" max="20" step="0.25" data-id="${sub.id}_cc" oninput="calculate()"></div>
-                `;
-            } else if (sub.type === 'bonus') {
-                return `
-                    <div class="input-wrapper"><label>Note Finale</label><input type="number" min="0" max="20" step="0.25" data-id="${sub.id}_note" oninput="calculate()"></div>
-                `;
-            } else {
-                // single or exam
-                return `
-                    <div class="input-wrapper"><label>Note</label><input type="number" min="0" max="20" step="0.25" data-id="${sub.id}_note" oninput="calculate()"></div>
-                `;
-            }
-        }
+<script>
+/* =====================================================================
+   DATA MODEL
+   Each year = { semesters: [ {key,label, ues:[ {title, badge, render(container,sem)} ] } ] }
+   ===================================================================== */
 
-        function loadLevel(level) {
-            // Update active button
-            document.querySelectorAll('.btn-level').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+let ROWKEY = 0;
+function nk(){ ROWKEY++; return 'r'+ROWKEY; }
 
-            const container = document.getElementById('form-container');
-            container.innerHTML = '';
-            
-            config[level].forEach((section, sIdx) => {
-                let html = `<div class="section-card" data-section="${sIdx}">
-                                <h2>${section.title}</h2>`;
-                
-                section.subjects.forEach(sub => {
-                    let typeLabel = '';
-                    if(sub.type === 'ann') typeLabel = 'Annualisée';
-                    else if(sub.type === 'td') typeLabel = 'Avec TD (50% Ex / 50% CC)';
-                    else if(sub.type === 'exam') typeLabel = 'Sans TD (100% Ex)';
-                    else if(sub.type === 'bonus') typeLabel = 'Points > 10 ajoutés au total';
-                    else typeLabel = 'Note unique (100%)';
+/* ---------------- generic row + group builders ---------------- */
 
-                    let coefLabel = sub.type === 'bonus' ? 'Bonus' : \`Coef: \${sub.coef}\`;
+function rowHTML(opts){
+  // opts: {key,name,coef,ects,mode ('mixed'|'cc'|'exam'|'annuel'|'single'), sem, bonus, active, control(html for left-side control), fixedMarker}
+  const active = opts.active !== false;
+  const bonus = !!opts.bonus;
+  const control = opts.control || (opts.fixedMarker ? '<span class="marker"></span>' : '');
+  let inputs = '';
+  if(opts.mode === 'mixed'){
+    inputs = \`
+      <div class="in-field"><label>Contrôle continu</label><input type="number" class="in-cc" min="0" max="20" step="0.25" placeholder="/20"></div>
+      <div class="in-field"><label>Examen</label><input type="number" class="in-ex" min="0" max="20" step="0.25" placeholder="/20"></div>\`;
+  } else if(opts.mode === 'annuel'){
+    inputs = \`
+      <div class="in-field"><label>CC S1</label><input type="number" class="in-cc1" min="0" max="20" step="0.25" placeholder="/20"></div>
+      <div class="in-field"><label>Exam S1</label><input type="number" class="in-ex1" min="0" max="20" step="0.25" placeholder="/20"></div>
+      <div class="in-field"><label>CC S2</label><input type="number" class="in-cc2" min="0" max="20" step="0.25" placeholder="/20"></div>
+      <div class="in-field"><label>Exam S2</label><input type="number" class="in-ex2" min="0" max="20" step="0.25" placeholder="/20"></div>\`;
+  } else if(opts.mode === 'cc'){
+    inputs = \`<div class="in-field"><label>\${bonus? 'Note' : 'Note (CC intégral)'}</label><input type="number" class="in-single" min="0" max="20" step="0.25" placeholder="/20"></div>\`;
+  } else if(opts.mode === 'single'){
+    inputs = \`<div class="in-field"><label>Note unique</label><input type="number" class="in-single" min="0" max="20" step="0.25" placeholder="/20"></div>\`;
+  } else {
+    inputs = \`<div class="in-field"><label>Note (examen)</label><input type="number" class="in-single" min="0" max="20" step="0.25" placeholder="/20"></div>\`;
+  }
+  const badge = bonus
+    ? \`<span class="badges">bonus</span>\`
+    : \`<span class="badges">coef <b>\${opts.coef}</b> · \${opts.ects} ECTS</span>\`;
+  return \`
+  <div class="grade-row \${opts.fixedMarker?'fixed':''} \${active?'':'inactive'}" data-key="\${opts.key}" data-coef="\${opts.coef||0}" data-ects="\${opts.ects||0}"
+       data-mode="\${opts.mode}" data-sem="\${opts.sem}" data-bonus="\${bonus?'true':'false'}" data-active="\${active?'true':'false'}">
+    <div class="row-top">
+      <div class="row-left">\${control}<label class="course-name">\${opts.name}</label></div>
+      \${badge}
+    </div>
+    <div class="row-inputs">\${inputs}</div>
+  </div>\`;
+}
 
-                    html += `
-                        <div class="subject-row">
-                            <div class="subject-info">
-                                <h4>${sub.name}</h4>
-                                <span>${coefLabel} | ${typeLabel}</span>
-                            </div>
-                            <div class="inputs-group">
-                                ${renderInput(sub)}
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                html += `</div>`;
-                container.innerHTML += html;
-            });
-            
-            // reset logic
-            document.getElementById('res-s1').innerText = '--/20';
-            document.getElementById('res-s2').innerText = '--/20';
-            document.getElementById('res-year').innerText = '--/20';
-            
-            // Set current level for calculation context
-            window.currentLevel = level;
-        }
+function getNoteFromRow(row){
+  if(row.dataset.active !== 'true') return null;
+  const mode = row.dataset.mode;
+  if(mode === 'mixed'){
+    const cc = parseFloat(row.querySelector('.in-cc')?.value);
+    const ex = parseFloat(row.querySelector('.in-ex')?.value);
+    if(isNaN(cc) || isNaN(ex)) return null;
+    return cc*0.5 + ex*0.5;
+  }
+  if(mode === 'annuel'){
+    const cc1 = parseFloat(row.querySelector('.in-cc1')?.value);
+    const ex1 = parseFloat(row.querySelector('.in-ex1')?.value);
+    const cc2 = parseFloat(row.querySelector('.in-cc2')?.value);
+    const ex2 = parseFloat(row.querySelector('.in-ex2')?.value);
+    if(isNaN(cc1) || isNaN(ex1) || isNaN(cc2) || isNaN(ex2)) return null;
+    return (cc1 + ex1 + cc2 + ex2) / 4;
+  }
+  const v = parseFloat(row.querySelector('.in-single')?.value);
+  return isNaN(v) ? null : v;
+}
 
-        function getVal(id) {
-            const el = document.querySelector(\`input[data-id="\${id}"]\`);
-            if(!el || el.value === "") return null;
-            return parseFloat(el.value);
-        }
+function setActive(row, active){
+  row.dataset.active = active ? 'true' : 'false';
+  row.classList.toggle('inactive', !active);
+  row.querySelectorAll('input').forEach(i=>{ if(i.type==='number') i.disabled = !active; });
+}
 
-        function calculate() {
-            let ptsS1 = 0, coefS1 = 0;
-            let ptsS2 = 0, coefS2 = 0;
-            let ptsAnn = 0, coefAnn = 0;
-            let bonusPts = 0;
+/* Fixed single course, always counted */
+function fixed(name, coef, ects, mode, sem){
+  return rowHTML({key:nk(), name, coef, ects, mode, sem, active:true, fixedMarker:true});
+}
 
-            const lvlData = config[window.currentLevel];
-            
-            lvlData.forEach(section => {
-                section.subjects.forEach(sub => {
-                    if (sub.type === 'ann') {
-                        let ex1 = getVal(sub.id + '_ex1');
-                        let cc1 = getVal(sub.id + '_cc1');
-                        let ex2 = getVal(sub.id + '_ex2');
-                        let cc2 = getVal(sub.id + '_cc2');
-                        
-                        if(ex1 !== null && cc1 !== null && ex2 !== null && cc2 !== null) {
-                            // (CC S1 + CC S2) / 2 => 50% du CC global. Et Exam S1, Exam S2 pour la partie Exam.
-                            // Formule académique standard : (Exam S1 + CC S1 + Exam S2 + CC S2) / 4
-                            let note = (ex1 + cc1 + ex2 + cc2) / 4;
-                            ptsAnn += note * sub.coef;
-                            coefAnn += sub.coef;
-                            
-                            // Répartition approximative pour les affichages semestriels :
-                            ptsS1 += ((ex1 + cc1)/2) * (sub.coef / 2);
-                            coefS1 += (sub.coef / 2);
-                            
-                            ptsS2 += ((ex2 + cc2)/2) * (sub.coef / 2);
-                            coefS2 += (sub.coef / 2);
-                        }
-                    } else if (sub.type === 'td') {
-                        let ex = getVal(sub.id + '_ex');
-                        let cc = getVal(sub.id + '_cc');
-                        if(ex !== null && cc !== null) {
-                            let note = (ex + cc) / 2;
-                            if (sub.id.includes('s1')) { ptsS1 += note * sub.coef; coefS1 += sub.coef; }
-                            else { ptsS2 += note * sub.coef; coefS2 += sub.coef; }
-                        }
-                    } else if (sub.type === 'bonus') {
-                        let b = getVal(sub.id + '_note');
-                        if(b !== null && b > 10) {
-                            bonusPts += (b - 10); // Standard: points above 10 added to sum
-                        }
-                    } else {
-                        // exam ou single
-                        let note = getVal(sub.id + '_note');
-                        if(note !== null) {
-                            if (sub.id.includes('s1')) { ptsS1 += note * sub.coef; coefS1 += sub.coef; }
-                            else { ptsS2 += note * sub.coef; coefS2 += sub.coef; }
-                        }
-                    }
-                });
-            });
+/* Choice of exactly 1 among options -> radios, only selected row active */
+function choice1(container, groupName, options, sem){
+  const keys = options.map(()=>nk());
+  const html = options.map((o,i)=> rowHTML({
+    key:keys[i], name:o.name, coef:o.coef, ects:o.ects, mode:o.mode, sem,
+    active:false,
+    control:\`<input type="radio" name="\${groupName}" data-idx="\${i}">\`
+  })).join('');
+  container.insertAdjacentHTML('beforeend', html);
+  const rows = keys.map(k=>container.querySelector(\`.grade-row[data-key="\${k}"]\`));
+  container.querySelectorAll(\`input[name="\${groupName}"]\`).forEach((radio, i)=>{
+    radio.addEventListener('change', ()=>{
+      rows.forEach((r,j)=> setActive(r, j===i));
+      recompute();
+    });
+  });
+}
 
-            // Affichage
-            let s1Display = '--/20';
-            let s2Display = '--/20';
-            let yearDisplay = '--/20';
+/* Choice of exactly N among options -> checkboxes capped at n */
+function choiceN(container, groupName, options, n, sem){
+  const keys = options.map(()=>nk());
+  const html = options.map((o,i)=> rowHTML({
+    key:keys[i], name:o.name, coef:o.coef, ects:o.ects, mode:o.mode, sem,
+    active:false,
+    control:\`<input type="checkbox" name="\${groupName}" data-idx="\${i}">\`
+  })).join('');
+  container.insertAdjacentHTML('beforeend', html);
+  const rows = keys.map(k=>container.querySelector(\`.grade-row[data-key="\${k}"]\`));
+  const boxes = [...container.querySelectorAll(\`input[name="\${groupName}"]\`)];
+  function refresh(){
+    const checkedCount = boxes.filter(b=>b.checked).length;
+    boxes.forEach((b,i)=>{
+      setActive(rows[i], b.checked);
+      b.disabled = (!b.checked && checkedCount>=n);
+    });
+    recompute();
+  }
+  boxes.forEach(b=> b.addEventListener('change', refresh));
+}
 
-            if (coefS1 > 0) {
-                // Bonus réparti ? Habituellement sur l'année. On l'affiche sur l'année.
-                s1Display = (ptsS1 / coefS1).toFixed(3) + '/20';
-            }
-            if (coefS2 > 0) {
-                s2Display = (ptsS2 / coefS2).toFixed(3) + '/20';
-            }
+/* "K obligatoires dont 1 (ou plus) au choix avec TD": every course always active,
+   but coef/ects/mode switch between TD-version and non-TD-version depending on selection */
+function pairedChoice(container, groupName, courses, sem, tdCount){
+  tdCount = tdCount || 1;
+  const keys = courses.map(()=>nk());
+  const html = courses.map((c,i)=> {
+    const control = tdCount===1
+      ? \`<input type="radio" name="\${groupName}" data-idx="\${i}">\`
+      : \`<input type="checkbox" name="\${groupName}" data-idx="\${i}">\`;
+    return rowHTML({
+      key:keys[i], name:c.name, coef:c.coefNoTD, ects:c.ectsNoTD, mode:'exam', sem,
+      active:true,
+      control:\`<span class="td-toggle">\${control}<span>TD</span></span>\`
+    });
+  }).join('');
+  container.insertAdjacentHTML('beforeend', html);
+  const rows = keys.map(k=>container.querySelector(\`.grade-row[data-key="\${k}"]\`));
+  const boxes = [...container.querySelectorAll(\`input[name="\${groupName}"]\`)];
 
-            let totalCoef = coefS1 + coefS2;
-            let totalPts = ptsS1 + ptsS2 + bonusPts; 
+  function applyRow(i, isTD){
+    const row = rows[i], c = courses[i];
+    if(isTD){
+      row.dataset.coef = c.coefTD; row.dataset.ects = c.ectsTD;
+      row.dataset.mode = c.ccIntegral ? 'cc' : 'mixed';
+      row.querySelector('.badges').innerHTML = \`coef <b>\${c.coefTD}</b> · \${c.ectsTD} ECTS\`;
+      const box = row.querySelector('.row-inputs');
+      box.innerHTML = c.ccIntegral
+        ? \`<div class="in-field"><label>Note (CC intégral)</label><input type="number" class="in-single" min="0" max="20" step="0.25" placeholder="/20"></div>\`
+        : \`<div class="in-field"><label>Contrôle continu</label><input type="number" class="in-cc" min="0" max="20" step="0.25" placeholder="/20"></div>
+           <div class="in-field"><label>Examen</label><input type="number" class="in-ex" min="0" max="20" step="0.25" placeholder="/20"></div>\`;
+    } else {
+      row.dataset.coef = c.coefNoTD; row.dataset.ects = c.ectsNoTD; row.dataset.mode = 'exam';
+      row.querySelector('.badges').innerHTML = \`coef <b>\${c.coefNoTD}</b> · \${c.ectsNoTD} ECTS\`;
+      row.querySelector('.row-inputs').innerHTML = \`<div class="in-field"><label>Note (examen)</label><input type="number" class="in-single" min="0" max="20" step="0.25" placeholder="/20"></div>\`;
+    }
+  }
 
-            // Si toutes les notes sont remplies (vérification grossière avec total coef attendu), 
-            // on pourrait être plus stricts, mais l'approche dynamique calcule la moyenne sur les matières saisies.
-            if (totalCoef > 0) {
-                let finalAvg = totalPts / totalCoef;
-                yearDisplay = finalAvg.toFixed(3) + '/20';
-            }
+  if(tdCount===1){
+    boxes.forEach((radio,i)=>{
+      radio.addEventListener('change', ()=>{
+        courses.forEach((c,j)=> applyRow(j, j===i));
+        recompute();
+      });
+    });
+  } else {
+    boxes.forEach((box,i)=>{
+      box.addEventListener('change', ()=>{
+        const checkedCount = boxes.filter(b=>b.checked).length;
+        boxes.forEach((b,j)=>{ if(!b.checked) b.disabled = checkedCount>=tdCount; });
+        applyRow(i, box.checked);
+        recompute();
+      });
+    });
+  }
+}
 
-            document.getElementById('res-s1').innerText = s1Display;
-            document.getElementById('res-s2').innerText = s2Display;
-            document.getElementById('res-year').innerText = yearDisplay;
-        }
+/* L3 S5 style: choose K1 "avec TD" then K2 more "sans TD" from the remaining, rest excluded entirely */
+function tdSansSelect(container, groupName, options, k1, k2, sem){
+  const keys = options.map(()=>nk());
+  const html = options.map((o,i)=> rowHTML({
+    key:keys[i], name:o.name, coef:o.coefTD, ects:o.ectsTD, mode:'mixed', sem,
+    active:false,
+    control:\`
+      <span class="td-toggle"><input type="checkbox" name="\${groupName}-td" data-idx="\${i}"><span>avec TD</span></span>
+      <span class="td-toggle" style="background:#eee7d5;color:var(--muted);"><input type="checkbox" name="\${groupName}-sans" data-idx="\${i}"><span>sans TD</span></span>\`
+  })).join('');
+  container.insertAdjacentHTML('beforeend', html);
+  const rows = keys.map(k=>container.querySelector(\`.grade-row[data-key="\${k}"]\`));
+  const tdBoxes = [...container.querySelectorAll(\`input[name="\${groupName}-td"]\`)];
+  const sansBoxes = [...container.querySelectorAll(\`input[name="\${groupName}-sans"]\`)];
 
-        // Init L1 on load
-        window.onload = () => loadLevel('L1');
+  function setRowMode(i, mode){
+    const row = rows[i], o = options[i];
+    if(mode==='td'){
+      row.dataset.coef=o.coefTD; row.dataset.ects=o.ectsTD; row.dataset.mode='mixed';
+      row.querySelector('.badges').innerHTML = \`coef <b>\${o.coefTD}</b> · \${o.ectsTD} ECTS\`;
+      row.querySelector('.row-inputs').innerHTML = \`<div class="in-field"><label>Contrôle continu</label><input type="number" class="in-cc" min="0" max="20" step="0.25" placeholder="/20"></div>
+        <div class="in-field"><label>Examen</label><input type="number" class="in-ex" min="0" max="20" step="0.25" placeholder="/20"></div>\`;
+      setActive(row,true);
+    } else if(mode==='sans'){
+      row.dataset.coef=o.coefNoTD; row.dataset.ects=o.ectsNoTD; row.dataset.mode='exam';
+      row.querySelector('.badges').innerHTML = \`coef <b>\${o.coefNoTD}</b> · \${o.ectsNoTD} ECTS\`;
+      row.querySelector('.row-inputs').innerHTML = \`<div class="in-field"><label>Note (examen)</label><input type="number" class="in-single" min="0" max="20" step="0.25" placeholder="/20"></div>\`;
+      setActive(row,true);
+    } else {
+      setActive(row,false);
+    }
+  }
 
-    </script>
+  function refresh(){
+    const tdChecked = tdBoxes.filter(b=>b.checked).length;
+    const sansChecked = sansBoxes.filter(b=>b.checked).length;
+    tdBoxes.forEach(b=> b.disabled = (!b.checked && tdChecked>=k1));
+    sansBoxes.forEach(b=> b.disabled = (!b.checked && sansChecked>=k2));
+    recompute();
+  }
+
+  tdBoxes.forEach((box,i)=>{
+    box.addEventListener('change', ()=>{
+      if(box.checked){ sansBoxes[i].checked=false; sansBoxes[i].disabled=true; setRowMode(i,'td'); }
+      else { sansBoxes[i].disabled=false; setRowMode(i, sansBoxes[i].checked?'sans':null); }
+      refresh();
+    });
+  });
+  sansBoxes.forEach((box,i)=>{
+    box.addEventListener('change', ()=>{
+      if(box.checked){ tdBoxes[i].checked=false; tdBoxes[i].disabled=true; setRowMode(i,'sans'); }
+      else { tdBoxes[i].disabled=false; setRowMode(i, tdBoxes[i].checked?'td':null); }
+      refresh();
+    });
+  });
+}
+
+function bonusRow(container, name, sem){
+  container.insertAdjacentHTML('beforeend', rowHTML({key:nk(), name, coef:0, ects:0, mode:'exam', sem, bonus:true, active:true}));
+}
+
+/* =====================================================================
+   YEAR BUILDERS
+   ===================================================================== */
+
+function ueCard(container, title, badge, noteText){
+  const card = document.createElement('div'); card.className='ue-card';
+  card.innerHTML = \`<div class="ue-head"><span>\${title}</span>\${badge?\`<span class="ue-badges">\${badge}</span>\`:\`\`}</div><div class="ue-body">\${noteText?\`<p class="ue-note">\${noteText}</p>\`:\`\`}</div>\`;
+  container.appendChild(card);
+  return card.querySelector('.ue-body');
+}
+function subLabel(container, text){ container.insertAdjacentHTML('beforeend', \`<div class="subgroup-label">\${text}</div>\`); }
+
+/* ---------------- L1 ---------------- */
+function buildL1(root){
+  // ANNUEL
+  const semA = sectionFor(root,'Annuel');
+  let b = ueCard(semA, 'UE annualisée · Fondamentaux de droit', 'coef 16 · 20 ECTS');
+  b.insertAdjacentHTML('beforeend', fixed('Droit privé (matière annualisée)', 8, 10, 'annuel', 'Annuel'));
+  b.insertAdjacentHTML('beforeend', fixed('Droit constitutionnel (matière annualisée)', 8, 10, 'annuel', 'Annuel'));
+
+  // S1
+  const s1 = sectionFor(root,'S1');
+  b = ueCard(s1, 'UE 1 · Fondamentaux de droit', 'coef 4 · 5 ECTS');
+  b.insertAdjacentHTML('beforeend', fixed('Introduction historique au droit', 4, 5, 'mixed', 'S1'));
+
+  b = ueCard(s1, 'UE 2 · Enseignements transversaux', 'coef 8 · 11 ECTS');
+  subLabel(b,'3 cours obligatoires');
+  b.insertAdjacentHTML('beforeend', fixed('Droit civil (Personnes)', 2, 3, 'exam', 'S1'));
+  b.insertAdjacentHTML('beforeend', fixed('Institutions juridictionnelles et grands procès', 2, 3, 'exam', 'S1'));
+  b.insertAdjacentHTML('beforeend', fixed('Grands enjeux juridiques du monde contemporain', 2, 3, 'exam', 'S1'));
+  subLabel(b,'1 cours au choix');
+  choice1(b, 'l1-s1-ue2-choix', [
+    {name:'Science politique : vie politique contemporaine', coef:2, ects:2, mode:'exam'},
+    {name:'Économie et droit', coef:2, ects:2, mode:'exam'},
+    {name:'Histoire des idées politiques', coef:2, ects:2, mode:'exam'},
+  ], 'S1');
+
+  b = ueCard(s1, 'UE 3 · Langue 1 (TD au choix)', 'coef 2 · 3 ECTS');
+  choice1(b, 'l1-s1-ue3-langue', [
+    {name:'Anglais juridique', coef:2, ects:3, mode:'mixed'},
+    {name:'Espagnol juridique', coef:2, ects:3, mode:'mixed'},
+  ], 'S1');
+
+  b = ueCard(s1, 'UE 4 · Semaine méthodologique intensive', 'coef 1 · 1 ECTS');
+  b.insertAdjacentHTML('beforeend', fixed('Style et méthodologie juridiques', 1, 1, 'single', 'S1'));
+
+  b = ueCard(s1, 'Bonifications (facultatif)', null, 'Sans coefficient officiel : ajoute jusqu\'à 0,5 point si la note dépasse 10/20.');
+  b.className += ' bonus-card'; b.parentElement.className += ' bonus-card';
+  bonusRow(b, 'Ouverture : langue, activités culturelles ou sport', 'S1');
+
+  // S2
+  const s2 = sectionFor(root,'S2');
+  b = ueCard(s2, 'UE 1 · Transversaux de droit — 1 au choix avec TD (CC intégral)', 'coef 12 · 17 ECTS');
+  subLabel(b,'4 matières obligatoires — cochez celle suivie avec TD');
+  pairedChoice(b, 'l1-s2-ue1-td', [
+    {name:'Droit pénal', coefTD:4, ectsTD:5, coefNoTD:2, ectsNoTD:3, ccIntegral:true},
+    {name:'Droit civil des biens', coefTD:4, ectsTD:5, coefNoTD:2, ectsNoTD:3, ccIntegral:true},
+    {name:'Droit des finances publiques', coefTD:4, ectsTD:5, coefNoTD:2, ectsNoTD:3, ccIntegral:true},
+    {name:'Institutions et relations internationales et européennes', coefTD:4, ectsTD:5, coefNoTD:2, ectsNoTD:3, ccIntegral:true},
+  ], 'S2', 1);
+  subLabel(b,'1 cours au choix');
+  choice1(b, 'l1-s2-ue1-choix', [
+    {name:'Enjeux juridiques du développement durable et des transitions', coef:2, ects:3, mode:'exam'},
+    {name:'Enjeux juridiques du numérique et de l\'intelligence artificielle', coef:2, ects:3, mode:'exam'},
+  ], 'S2');
+
+  b = ueCard(s2, 'UE 2 · Langue 1 (TD au choix)', 'coef 2 · 3 ECTS');
+  choice1(b, 'l1-s2-ue2-langue', [
+    {name:'Anglais juridique', coef:2, ects:3, mode:'mixed'},
+    {name:'Espagnol juridique', coef:2, ects:3, mode:'mixed'},
+  ], 'S2');
+
+  b = ueCard(s2, 'Bonifications (facultatif)', null, 'UE de réorientation non incluse (concerne uniquement les étudiants en réorientation).');
+  bonusRow(b, 'Ouverture : langue, activités culturelles ou sport', 'S2');
+  bonusRow(b, 'Bonus Certificat de l\'EDS', 'S2');
+}
+
+/* ---------------- L2 ---------------- */
+function buildL2(root){
+  const semA = sectionFor(root,'Annuel');
+  let b = ueCard(semA, 'UE annualisée · Fondamentaux de droit', 'coef 16 · 24 ECTS');
+  b.insertAdjacentHTML('beforeend', fixed('Droit des obligations (matière annualisée)', 8, 12, 'annuel', 'Annuel'));
+  b.insertAdjacentHTML('beforeend', fixed('Droit administratif (matière annualisée)', 8, 12, 'annuel', 'Annuel'));
+
+  const s1 = sectionFor(root,'S1');
+  b = ueCard(s1, 'UE 1 · Transversaux de droit — 1 au choix avec TD (CC intégral)', 'coef 12 · 16 ECTS');
+  subLabel(b,'4 matières obligatoires — cochez celle suivie avec TD');
+  pairedChoice(b, 'l2-s1-ue1-td', [
+    {name:'Droit des affaires', coefTD:4, ectsTD:4, coefNoTD:2, ectsNoTD:3, ccIntegral:true},
+    {name:'Procédure pénale', coefTD:4, ectsTD:4, coefNoTD:2, ectsNoTD:3, ccIntegral:true},
+    {name:'Droit européen', coefTD:4, ectsTD:4, coefNoTD:2, ectsNoTD:3, ccIntegral:true},
+    {name:'Droit international public I', coefTD:4, ectsTD:4, coefNoTD:2, ectsNoTD:3, ccIntegral:true},
+  ], 'S1', 1);
+  subLabel(b,'1 cours obligatoire sans TD, au choix');
+  choice1(b, 'l2-s1-ue1-histoire', [
+    {name:'Histoire du droit des obligations', coef:2, ects:3, mode:'exam'},
+    {name:'Histoire du droit administratif', coef:2, ects:3, mode:'exam'},
+    {name:'Histoire du droit pénal', coef:2, ects:3, mode:'exam'},
+  ], 'S1');
+
+  b = ueCard(s1, 'UE 2 · Langue (TD au choix)', 'coef 2 · 2 ECTS');
+  choice1(b, 'l2-s1-ue2-langue', [
+    {name:'Anglais juridique', coef:2, ects:2, mode:'mixed'},
+    {name:'Espagnol juridique', coef:2, ects:2, mode:'mixed'},
+  ], 'S1');
+
+  b = ueCard(s1, 'Bonifications (facultatif)', null, null);
+  bonusRow(b, 'Ouverture : langue, activités culturelles ou sport', 'S1');
+  bonusRow(b, 'Bonus Certificat de l\'EDS', 'S1');
+  bonusRow(b, 'Stage de fin de L1 (EDS)', 'S1');
+
+  const s2 = sectionFor(root,'S2');
+  b = ueCard(s2, 'UE 1 · Transversaux de droit — 1 au choix avec TD (CC intégral)', 'coef 12 · 16 ECTS');
+  subLabel(b,'5 matières obligatoires — cochez celle suivie avec TD');
+  pairedChoice(b, 'l2-s2-ue1-td', [
+    {name:'Relations individuelles de travail', coefTD:4, ectsTD:4, coefNoTD:2, ectsNoTD:3, ccIntegral:true},
+    {name:'Droit des sociétés I', coefTD:4, ectsTD:4, coefNoTD:2, ectsNoTD:3, ccIntegral:true},
+    {name:'Droit fiscal', coefTD:4, ectsTD:4, coefNoTD:2, ectsNoTD:3, ccIntegral:true},
+    {name:'Système juridique de l\'Union européenne', coefTD:4, ectsTD:4, coefNoTD:2, ectsNoTD:3, ccIntegral:true},
+    {name:'Droit pénal spécial', coefTD:4, ectsTD:4, coefNoTD:2, ectsNoTD:3, ccIntegral:true},
+  ], 'S2', 1);
+  subLabel(b,'1 cours obligatoire sans TD, au choix');
+  choice1(b, 'l2-s2-ue1-histoire', [
+    {name:'Histoire du droit de la famille', coef:2, ects:3, mode:'exam'},
+    {name:'Histoire des institutions de l\'Antiquité', coef:2, ects:3, mode:'exam'},
+    {name:'Histoire du droit des affaires', coef:2, ects:3, mode:'exam'},
+    {name:'Grands enjeux juridiques et pratiques professionnelles', coef:2, ects:3, mode:'exam'},
+  ], 'S2');
+
+  b = ueCard(s2, 'UE 2 · Langue (TD au choix)', 'coef 2 · 2 ECTS');
+  choice1(b, 'l2-s2-ue2-langue', [
+    {name:'Anglais juridique', coef:2, ects:2, mode:'mixed'},
+    {name:'Espagnol juridique', coef:2, ects:2, mode:'mixed'},
+  ], 'S2');
+
+  b = ueCard(s2, 'Bonifications (facultatif)', null, null);
+  bonusRow(b, 'Ouverture : langue, activités culturelles ou sport', 'S2');
+  bonusRow(b, 'Bonus Certificat de l\'EDS', 'S2');
+}
+
+/* ---------------- L3 ---------------- */
+function buildL3(root){
+  const s1 = sectionFor(root,'S5'); // semestre 5
+  let b = ueCard(s1, 'UE 1 · Fondamentaux de droit — 5 matières sur 9', 'coef 16 · 21 ECTS');
+  subLabel(b,'Choisissez 3 matières « avec TD » puis 2 matières supplémentaires « sans TD » (5 au total, parmi la liste de 9)');
+  tdSansSelect(b, 'l3-s5-ue1', [
+    {name:'Droit des libertés fondamentales', coefTD:4, ectsTD:5, coefNoTD:2, ectsNoTD:3},
+    {name:'Droit administratif des biens', coefTD:4, ectsTD:5, coefNoTD:2, ectsNoTD:3},
+    {name:'Droit public des affaires', coefTD:4, ectsTD:5, coefNoTD:2, ectsNoTD:3},
+    {name:'Droit international public II', coefTD:4, ectsTD:5, coefNoTD:2, ectsNoTD:3},
+    {name:'Régime de l\'obligation', coefTD:4, ectsTD:5, coefNoTD:2, ectsNoTD:3},
+    {name:'Contrats spéciaux', coefTD:4, ectsTD:5, coefNoTD:2, ectsNoTD:3},
+    {name:'Droit judiciaire privé', coefTD:4, ectsTD:5, coefNoTD:2, ectsNoTD:3},
+    {name:'Droit des sociétés II', coefTD:4, ectsTD:5, coefNoTD:2, ectsNoTD:3},
+    {name:'Relations collectives de travail', coefTD:4, ectsTD:5, coefNoTD:2, ectsNoTD:3},
+  ], 3, 2, 'S5');
+
+  b = ueCard(s1, 'UE 2 · Transversaux de droit — 2 cours sans TD au choix', 'coef 4 · 6 ECTS');
+  choiceN(b, 'l3-s5-ue2', [
+    {name:'Théorie générale du droit', coef:2, ects:3, mode:'exam'},
+    {name:'Droit comparé', coef:2, ects:3, mode:'exam'},
+    {name:'Articulation des ordres juridiques', coef:2, ects:3, mode:'exam'},
+    {name:'Histoire de la justice et de la procédure', coef:2, ects:3, mode:'exam'},
+  ], 2, 'S5');
+
+  b = ueCard(s1, 'UE 3 · Langue (TD au choix)', 'coef 2 · 3 ECTS');
+  choice1(b, 'l3-s5-ue3-langue', [
+    {name:'Anglais juridique', coef:2, ects:3, mode:'mixed'},
+    {name:'Espagnol juridique', coef:2, ects:3, mode:'mixed'},
+  ], 'S5');
+
+  b = ueCard(s1, 'Bonifications (facultatif)', null, null);
+  bonusRow(b, 'Stage de fin de L2 (EDS)', 'S5');
+  bonusRow(b, 'Bonus Certificat de l\'EDS', 'S5');
+
+  // S6 — project based
+  const s2 = sectionFor(root,'S6');
+  b = ueCard(s2, 'UE 1 · Projet personnel de licence — 1 projet au choix', 'coef 10 · 30 ECTS',
+    'Choisissez votre projet de S6. Le projet « Recherche juridique et CEJA » se compose de plusieurs éléments détaillés ci-dessous ; sa note globale se calcule automatiquement.');
+
+  const groupName = 'l3-s6-projet';
+  const opts = [
+    {name:'Projet professionnel — stage (rapport)', key:'pro'},
+    {name:'Projet international d\'études — mobilité', key:'mob'},
+    {name:'Projet personnel alternatif — activités bénévoles (rapport)', key:'ben'},
+    {name:'Projet de recherche juridique et CEJA', key:'ceja'},
+  ];
+  const rowKeys = opts.map(()=>nk());
+  const html = opts.map((o,i)=> {
+    if(o.key==='ceja'){
+      return rowHTML({key:rowKeys[i], name:o.name, coef:10, ects:30, mode:'exam', sem:'S6', active:false,
+        control:\`<input type="radio" name="\${groupName}" data-idx="\${i}">\`}).replace('<div class="row-inputs">', \`<div class="row-inputs" style="display:none;">\`);
+    }
+    return rowHTML({key:rowKeys[i], name:o.name, coef:10, ects:30, mode:'exam', sem:'S6', active:false,
+      control:\`<input type="radio" name="\${groupName}" data-idx="\${i}">\`});
+  }).join('');
+  b.insertAdjacentHTML('beforeend', html);
+  const rows = rowKeys.map(k=>b.querySelector(\`.grade-row[data-key="\${k}"]\`));
+
+  // CEJA sub-block, inserted right after the ceja row
+  const cejaRow = rows[3];
+  const cejaBox = document.createElement('div');
+  cejaBox.className = 'ceja-box';
+  cejaBox.innerHTML = \`
+    <div class="subgroup-label" style="margin-top:0;">Certificat d'études juridiques approfondies — détail noté</div>
+    <div id="ceja-inner"></div>
+  \`;
+  cejaRow.insertAdjacentElement('afterend', cejaBox);
+  const cejaInner = cejaBox.querySelector('#ceja-inner');
+
+  subLabel(cejaInner, '2 cours obligatoires — Prépa Grand Oral (moyenne pondérée coef 2 · 8 ECTS)');
+  cejaInner.insertAdjacentHTML('beforeend', fixed('Culture générale', 1, 4, 'exam', 'S6'));
+  cejaInner.insertAdjacentHTML('beforeend', fixed('Éthique, déontologie et compliance', 1, 4, 'exam', 'S6'));
+
+  subLabel(cejaInner, '2 séminaires au choix parmi 5 (moyenne pondérée coef 2 · 8 ECTS)');
+  choiceN(cejaInner, 'l3-s6-ceja-seminaires', [
+    {name:'Droit civil et procédure civile approfondis', coef:1, ects:4, mode:'exam'},
+    {name:'Droit et contentieux publics approfondis', coef:1, ects:4, mode:'exam'},
+    {name:'Droit pénal et procédure pénale approfondis', coef:1, ects:4, mode:'exam'},
+    {name:'Droit international et droit européen approfondis', coef:1, ects:4, mode:'exam'},
+    {name:'Droit et contentieux des affaires approfondis', coef:1, ects:4, mode:'exam'},
+  ], 2, 'S6');
+
+  subLabel(cejaInner, 'Mémoire (coef 4 · 8 ECTS)');
+  cejaInner.insertAdjacentHTML('beforeend', fixed('Mémoire (soutenance)', 4, 8, 'exam', 'S6'));
+
+  subLabel(cejaInner, '3 TD obligatoires (moyenne pondérée coef 1 · 4 ECTS)');
+  cejaInner.insertAdjacentHTML('beforeend', fixed('Initiation à la recherche juridique', 2, 2, 'mixed', 'S6'));
+  cejaInner.insertAdjacentHTML('beforeend', fixed('Style et écriture juridiques', 1, 1, 'mixed', 'S6'));
+  cejaInner.insertAdjacentHTML('beforeend', fixed('Discours, argumentation et oralité', 1, 1, 'mixed', 'S6'));
+
+  subLabel(cejaInner, '1 TD de langue juridique au choix (coef 1 · 2 ECTS)');
+  choice1(cejaInner, 'l3-s6-ceja-langue', [
+    {name:'Anglais juridique', coef:1, ects:2, mode:'mixed'},
+    {name:'Espagnol juridique', coef:1, ects:2, mode:'mixed'},
+  ], 'S6');
+  // mark all ceja-inner rows as belonging to a nested computation, excluded from the main coef sum
+  cejaInner.querySelectorAll('.grade-row').forEach(r=> r.dataset.ceja = 'true');
+
+  function recomputeCeja(){
+    let sum=0, coefSum=0;
+    cejaInner.querySelectorAll('.grade-row[data-active="true"]').forEach(r=>{
+      const note = getNoteFromRow(r);
+      const coef = parseFloat(r.dataset.coef);
+      if(note!=null){ sum += note*coef; coefSum += coef; }
+    });
+    const avg = coefSum>0 ? sum/coefSum : null;
+    // reflect into the hidden ceja row's single input so it feeds the main S6 choice like any other project
+    const singleInput = cejaRow.querySelector('.in-single');
+    if(avg!=null){ singleInput.value = avg.toFixed(2); } else { singleInput.value=''; }
+  }
+  cejaInner.addEventListener('input', recomputeCeja);
+  cejaInner.addEventListener('change', recomputeCeja);
+
+  b.querySelectorAll(\`input[name="\${groupName}"]\`).forEach((radio,i)=>{
+    radio.addEventListener('change', ()=>{
+      rows.forEach((r,j)=> setActive(r, j===i));
+      cejaBox.classList.toggle('visible', i===3);
+      if(i===3) recomputeCeja();
+      recompute();
+    });
+  });
+
+  b = ueCard(s2, 'Bonifications (facultatif)', null, null);
+  bonusRow(b, 'Ouverture : langue, activités culturelles ou sport', 'S6');
+  bonusRow(b, 'Bonus Certificat de l\'EDS', 'S6');
+}
+
+/* =====================================================================
+   YEAR / SEMESTER SCAFFOLDING
+   ===================================================================== */
+
+const YEARS = {
+  l1: {label:'Licence 1 Droit', sems:[
+        {key:'Annuel', label:'Matières annuelles'},
+        {key:'S1', label:'Semestre 1'},
+        {key:'S2', label:'Semestre 2'}], build:buildL1},
+  l2: {label:'Licence 2 Droit', sems:[
+        {key:'Annuel', label:'Matières annuelles'},
+        {key:'S1', label:'Semestre 1'},
+        {key:'S2', label:'Semestre 2'}], build:buildL2},
+  l3: {label:'Licence 3 Droit', sems:[
+        {key:'S5', label:'Semestre 5'},
+        {key:'S6', label:'Semestre 6'}], build:buildL3},
+};
+
+let currentYear = 'l1';
+const sectionRegistry = {}; // yearKey -> {semKey: containerEl}
+
+function sectionFor(root, semKey){
+  return sectionRegistry[root.dataset.year][semKey];
+}
+
+function buildYearPanel(yearKey){
+  const cfg = YEARS[yearKey];
+  const panel = document.createElement('div');
+  panel.className = 'year-panel';
+  panel.dataset.year = yearKey;
+  panel.style.display = 'none';
+  document.getElementById('panels').appendChild(panel);
+
+  sectionRegistry[yearKey] = {};
+  cfg.sems.forEach(s=>{
+    const sec = document.createElement('div');
+    sec.className = 'sem-block';
+    sec.dataset.sem = s.key;
+    panel.appendChild(sec);
+    sectionRegistry[yearKey][s.key] = sec;
+  });
+  cfg.build(panel);
+  cfg.sems.forEach((s,i)=>{ if(i===0) sectionRegistry[yearKey][s.key].classList.add('visible'); });
+  return panel;
+}
+
+const yearPanels = {};
+Object.keys(YEARS).forEach(k=>{ yearPanels[k] = buildYearPanel(k); });
+
+function renderSemNav(yearKey){
+  const nav = document.getElementById('sem-nav');
+  nav.innerHTML = '';
+  YEARS[yearKey].sems.forEach((s,i)=>{
+    const btn = document.createElement('div');
+    btn.className = 'sem-btn' + (i===0 ? ' active' : '');
+    btn.textContent = s.label;
+    btn.dataset.sem = s.key;
+    btn.addEventListener('click', ()=>{
+      nav.querySelectorAll('.sem-btn').forEach(x=>x.classList.remove('active'));
+      btn.classList.add('active');
+      Object.values(sectionRegistry[yearKey]).forEach(sec=>sec.classList.remove('visible'));
+      sectionRegistry[yearKey][s.key].classList.add('visible');
+    });
+    nav.appendChild(btn);
+  });
+}
+
+function switchYear(yearKey){
+  currentYear = yearKey;
+  document.querySelectorAll('.tab').forEach(t=> t.classList.toggle('active', t.dataset.year===yearKey));
+  Object.entries(yearPanels).forEach(([k,p])=> p.style.display = (k===yearKey?'block':'none'));
+  renderSemNav(yearKey);
+  recompute();
+}
+
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click', ()=> switchYear(tab.dataset.year));
+});
+
+/* =====================================================================
+   RECOMPUTE
+   ===================================================================== */
+
+function recompute(){
+  const panel = yearPanels[currentYear];
+  const semLabels = YEARS[currentYear].sems;
+  const semData = {}; semLabels.forEach(s=> semData[s.key] = {sum:0, coef:0});
+  let mainSum=0, mainCoef=0, filled=0, missing=0, bonusPoints=0, bonusFilled=0;
+
+  panel.querySelectorAll('.grade-row').forEach(row=>{
+    if(row.dataset.ceja === 'true') return; // counted inside the CEJA sub-average, not the main sum
+    if(row.dataset.active !== 'true') return;
+    const isBonus = row.dataset.bonus === 'true';
+    const note = getNoteFromRow(row);
+    if(isBonus){
+      if(note!=null){ bonusPoints += Math.min(0.5, Math.max(0, (note-10))/20); bonusFilled++; }
+      return;
+    }
+    const coef = parseFloat(row.dataset.coef) || 0;
+    if(note==null){ missing++; return; }
+    filled++;
+    mainSum += note*coef; mainCoef += coef;
+    const sem = row.dataset.sem;
+    if(semData[sem]){ semData[sem].sum += note*coef; semData[sem].coef += coef; }
+  });
+
+  const overall = mainCoef>0 ? mainSum/mainCoef : null;
+  const cappedBonus = Math.min(bonusPoints, 0.5);
+  const overallWithBonus = overall!=null ? Math.min(20, overall + cappedBonus) : null;
+
+  // seal
+  const sealNum = document.getElementById('seal-num');
+  sealNum.textContent = overallWithBonus!=null ? overallWithBonus.toFixed(2) : '—';
+
+  const pill = document.getElementById('status-pill');
+  pill.className = 'status-pill';
+  if(overallWithBonus==null){ pill.classList.add('empty'); pill.textContent = 'En attente de notes'; }
+  else if(overallWithBonus >= 10){ pill.classList.add('ok'); pill.textContent = 'Admis(e) — indicatif'; }
+  else if(overallWithBonus >= 8){ pill.classList.add('warn'); pill.textContent = 'Session de rattrapage — indicatif'; }
+  else { pill.classList.add('bad'); pill.textContent = 'Non admis(e) — indicatif'; }
+
+  // subtotals per semester
+  const sub = document.getElementById('subtotals');
+  sub.innerHTML = semLabels.map(s=>{
+    const d = semData[s.key];
+    const avg = d.coef>0 ? (d.sum/d.coef).toFixed(2) : '—';
+    return \`<div class="subtotal-row"><span>\${s.label}</span><b>\${avg}\${avg!=='—'?'/20':''}</b></div>\`;
+  }).join('') + \`<div class="subtotal-row annual"><span>Moyenne pondérée (hors bonus)</span><b>\${overall!=null?overall.toFixed(2)+'/20':'—'}</b></div>\`;
+
+  const bonusLine = document.getElementById('bonus-line');
+  if(bonusFilled>0){
+    bonusLine.style.display='flex';
+    bonusLine.innerHTML = \`<span>Bonification appliquée</span><b>+\${cappedBonus.toFixed(2)} pt</b>\`;
+  } else {
+    bonusLine.style.display='none';
+  }
+
+  document.getElementById('fill-status').textContent =
+    (filled+missing)>0
+      ? \`\${filled} note(s) saisie(s) sur \${filled+missing} enseignement(s) actuellement sélectionné(s).\`
+      : 'Faites vos choix d\'options ci-contre pour commencer.';
+}
+
+/* =====================================================================
+   INFO PANEL + RESET
+   ===================================================================== */
+
+document.getElementById('toggle-info').addEventListener('click', ()=>{
+  const p = document.getElementById('info-panel');
+  if(!p.classList.contains('visible')){
+    p.innerHTML = \`<h4>Comment la note est calculée</h4><ul>
+      <li>Matière avec TD, sans mention particulière : 50 % contrôle continu + 50 % examen terminal.</li>
+      <li>Matière avec TD marquée « CC intégral » dans la maquette : 100 % contrôle continu.</li>
+      <li>Matières annualisées avec TD : la moyenne se décompose entre S1 et S2 (CC et Examen), chacun pesant pour 25% de la note globale (donc CC total 50%, Examen total 50%).</li>
+      <li>Matière sans TD : 100 % examen terminal.</li>
+      <li>Style et méthodologie juridique : 1 note unique.</li>
+      <li>Moyenne = somme(note × coefficient) ÷ somme(coefficients), sur les enseignements actuellement sélectionnés et notés.</li>
+      <li>Bonifications (langue/sport/activités/certificat EDS) : hors coefficient, ajoutent jusqu'à 0,5 point si la note dépasse 10/20.</li>
+      <li>Le projet « Recherche juridique et CEJA » du S6 calcule sa propre moyenne interne (Prépa Grand Oral, séminaires, mémoire, TD, langue) qui devient sa note globale coef 10 · 30 ECTS.</li>
+    </ul>\`;
+  }
+  p.classList.toggle('visible');
+});
+
+document.getElementById('reset-btn').addEventListener('click', ()=>{
+  if(!confirm('Réinitialiser toutes les notes et choix de '+YEARS[currentYear].label+' ?')) return;
+  const panel = yearPanels[currentYear];
+  panel.querySelectorAll('input[type=number]').forEach(i=> i.value='');
+  panel.querySelectorAll('input[type=radio], input[type=checkbox]').forEach(i=>{ i.checked=false; i.disabled=false; });
+  panel.querySelectorAll('.grade-row').forEach(r=> setActive(r, r.classList.contains('fixed')));
+  panel.querySelectorAll('.ceja-box').forEach(cb=> cb.classList.remove('visible'));
+  recompute();
+});
+
+document.addEventListener('input', recompute);
+document.addEventListener('change', recompute);
+
+switchYear('l1');
+</script>
 </body>
-</html>"""
-
-with open("/mnt/data/Simulateur_Moyenne_AsEED.html", "w", encoding="utf-8") as f:
-    f.write(html_content)
-
-print("[file-tag: Simulateur_Moyenne_AsEED.html]")
+</html>
