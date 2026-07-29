@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Simulateur de moyenne · AsEED Sorbonne</title>
+<title>Le Registre — Simulateur de moyenne · AsEED Sorbonne</title>
 <link rel="icon" href="https://aseedsorbonne.com/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -272,7 +272,7 @@
   </main>
 
   <footer class="notes">
-    <p><b>Hypothèses de calcul</b> — la maquette officielle fixe les coefficients et crédits ECTS de chaque enseignement, mais ne détaille pas toujours la pondération interne CC/examen ni le barème exact des bonifications. Ce simulateur applique par défaut : (1) une note = 50&nbsp;% contrôle continu + 50&nbsp;% examen terminal pour toute matière assortie de travaux dirigés, sauf mention « CC intégral » dans la maquette où la note est alors 100&nbsp;% contrôle continu ; (2) une note = 100&nbsp;% examen terminal pour les matières sans TD ; (3) les matières annualisées avec TD sont divisées en notes de S1 et de S2 (CC et Examen), avec un poids égal de 50% pour chaque semestre. (4) les unités de bonification ne comptent pas dans le coefficient principal et ajoutent jusqu'à 0,5&nbsp;point sur la moyenne finale lorsque la note dépasse 10/20.</p>
+    <p><b>Hypothèses de calcul</b> — la maquette officielle fixe les coefficients et crédits ECTS de chaque enseignement, mais ne détaille pas toujours la pondération interne CC/examen ni le barème exact des bonifications. Ce simulateur applique par défaut : (1) une note = 50&nbsp;% contrôle continu + 50&nbsp;% examen terminal pour toute matière assortie de travaux dirigés, sauf mention « CC intégral » dans la maquette où la note est alors 100&nbsp;% contrôle continu ; (2) une note = 100&nbsp;% examen terminal pour les matières sans TD ; (3) les matières annualisées avec TD sont évaluées par un contrôle continu réparti sur les deux semestres (CC S1 25% et CC S2 25%) et un examen terminal unique en fin d'année (50%). (4) les unités de bonification ne comptent pas dans le coefficient principal et ajoutent jusqu'à 0,5&nbsp;point sur la moyenne finale lorsque la note dépasse 10/20.</p>
   </footer>
 </div>
 
@@ -300,9 +300,8 @@ function rowHTML(opts){
   } else if(opts.mode === 'annuel'){
     inputs = `
       <div class="in-field"><label>CC S1</label><input type="number" class="in-cc1" min="0" max="20" step="0.25" placeholder="/20"></div>
-      <div class="in-field"><label>Exam S1</label><input type="number" class="in-ex1" min="0" max="20" step="0.25" placeholder="/20"></div>
       <div class="in-field"><label>CC S2</label><input type="number" class="in-cc2" min="0" max="20" step="0.25" placeholder="/20"></div>
-      <div class="in-field"><label>Exam S2</label><input type="number" class="in-ex2" min="0" max="20" step="0.25" placeholder="/20"></div>`;
+      <div class="in-field"><label>Examen</label><input type="number" class="in-ex" min="0" max="20" step="0.25" placeholder="/20"></div>`;
   } else if(opts.mode === 'cc'){
     inputs = `<div class="in-field"><label>${bonus? 'Note' : 'Note (CC intégral)'}</label><input type="number" class="in-single" min="0" max="20" step="0.25" placeholder="/20"></div>`;
   } else if(opts.mode === 'single'){
@@ -335,11 +334,10 @@ function getNoteFromRow(row){
   }
   if(mode === 'annuel'){
     const cc1 = parseFloat(row.querySelector('.in-cc1')?.value);
-    const ex1 = parseFloat(row.querySelector('.in-ex1')?.value);
     const cc2 = parseFloat(row.querySelector('.in-cc2')?.value);
-    const ex2 = parseFloat(row.querySelector('.in-ex2')?.value);
-    if(isNaN(cc1) || isNaN(ex1) || isNaN(cc2) || isNaN(ex2)) return null;
-    return (cc1 + ex1 + cc2 + ex2) / 4;
+    const ex = parseFloat(row.querySelector('.in-ex')?.value);
+    if(isNaN(cc1) || isNaN(cc2) || isNaN(ex)) return null;
+    return (cc1 + cc2) / 4 + (ex / 2);
   }
   const v = parseFloat(row.querySelector('.in-single')?.value);
   return isNaN(v) ? null : v;
@@ -934,7 +932,7 @@ document.getElementById('toggle-info').addEventListener('click', ()=>{
     p.innerHTML = `<h4>Comment la note est calculée</h4><ul>
       <li>Matière avec TD, sans mention particulière : 50 % contrôle continu + 50 % examen terminal.</li>
       <li>Matière avec TD marquée « CC intégral » dans la maquette : 100 % contrôle continu.</li>
-      <li>Matières annualisées avec TD : la moyenne se décompose entre S1 et S2 (CC et Examen), chacun pesant pour 25% de la note globale (donc CC total 50%, Examen total 50%).</li>
+      <li>Matières annualisées avec TD : un contrôle continu réparti sur les deux semestres (CC S1 25% et CC S2 25%) et un unique examen terminal en fin d'année (50%).</li>
       <li>Matière sans TD : 100 % examen terminal.</li>
       <li>Style et méthodologie juridique : 1 note unique.</li>
       <li>Moyenne = somme(note × coefficient) ÷ somme(coefficients), sur les enseignements actuellement sélectionnés et notés.</li>
