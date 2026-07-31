@@ -896,8 +896,7 @@ function recompute(){
   const pill = document.getElementById('status-pill');
   pill.className = 'status-pill';
   if(overallWithBonus==null){ pill.classList.add('empty'); pill.textContent = 'En attente de notes'; }
-  else if(overallWithBonus >= 10){ pill.classList.add('ok'); pill.textContent = 'Admis(e) — indicatif'; }
-  else if(overallWithBonus >= 8){ pill.classList.add('warn'); pill.textContent = 'Session de rattrapage — indicatif'; }
+  else if(overallWithBonus >= 10){ pill.classList.add('ok'); pill.textContent = 'Admis.e — indicatif'; }
   else { pill.classList.add('bad'); pill.textContent = 'Non admis(e) — indicatif'; }
 
   // subtotals per semester
